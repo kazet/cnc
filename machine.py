@@ -12,11 +12,11 @@ class MachineUseException(Exception):
 
 
 class MachineAxis():
-    def __init__(self, motor, slack, mm_per_revolution, steps_per_revolution, step_time):
+    def __init__(self, motor, backlash, mm_per_revolution, steps_per_revolution, step_time):
         self._motor = motor
         self._tool_position = None
         self._positioner_position = None
-        self._slack = slack
+        self._backlash = backlash
         self._mm_per_revolution = mm_per_revolution
         self._steps_per_revolution = steps_per_revolution
         self._step_time = step_time
@@ -31,20 +31,20 @@ class MachineAxis():
 
     def initialize(self):
         # Situation ---|???????| - partially unknown tool position
-        for unused_i in range(int(self._steps_for_mm(self._slack / 2.0))):
+        for unused_i in range(int(self._steps_for_mm(self._backlash / 2.0))):
             self._motor.step_left(self._step_time)
 
         # Situation |   ????|
-        for unused_i in range(int(self._steps_for_mm(self._slack))):
+        for unused_i in range(int(self._steps_for_mm(self._backlash))):
             self._motor.step_right(self._step_time)
 
         # Situation ------|?       |
-        for unused_i in range(int(self._steps_for_mm(self._slack / 2.0))):
+        for unused_i in range(int(self._steps_for_mm(self._backlash / 2.0))):
             self._motor.step_left(self._step_time)
 
         # Situation ---|   T   |
         self._tool_position = 0
-        self._positioner_position = -self._slack / 2.0
+        self._positioner_position = -self._backlash / 2.0
 
     def steps_needed_to_move_to(self, new_tool_position, mode):
         if mode == MachineMode.ABSOLUTE:
@@ -62,7 +62,7 @@ class MachineAxis():
         else:
             assert(False)
 
-    def compensate_for_slack(self, new_tool_position, mode):
+    def compensate_for_backlash(self, new_tool_position, mode):
         if mode == MachineMode.ABSOLUTE:
             if new_tool_position > self._tool_position:
                 sign = 1
@@ -135,11 +135,11 @@ class Machine():
             if len(set(gcode.get_param_dict().keys()) - set(['X', 'Y', 'Z'])) > 0:
                 raise MachineUseException("Unknown axes in %s" % repr(gcode.get_param_dict()))
 
-            self._x_axis.compensate_for_slack(
+            self._x_axis.compensate_for_backlash(
                 gcode.get_param_dict()['X'],
                 self._mode
             )
-            self._y_axis.compensate_for_slack(
+            self._y_axis.compensate_for_backlash(
                 gcode.get_param_dict()['Y'],
                 self._mode
             )
