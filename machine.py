@@ -1,4 +1,8 @@
+import time
+
 import pygcode.gcodes
+
+from steps_sequence import create_xyz_steps_sequence
 
 class MachineMode():
     ABSOLUTE = 0
@@ -78,7 +82,7 @@ class MachineAxis():
             else:  # new_tool_position < 0
                 sign = -1
 
-        pass # TODO 
+        pass # TODO
 
     def _steps_for_mm(self, mm):
         return self._steps_per_revolution * mm / self._mm_per_revolution
@@ -93,37 +97,50 @@ class Machine():
         self._initialized = False
 
     def _coordinated_move(self, x_steps, y_steps):
+        TOO_SMALL_TIME_TO_SLEEP = 10 ** (-6)
+
         if x_steps < 0:
             x_steps = abs(x_steps)
-            x_stepper = self._x_axis.motor.step_right
+            self._x_axis.motor.signal_go_right()
         else:
-            x_stepper = self._x_axis.motor.step_left
+            self._x_axis.motor.signal_go_left()
 
         if y_steps < 0:
             y_steps = abs(y_steps)
-            y_stepper = self._y_axis.motor.step_right
+            self._y_axis.motor.signal_go_right()
         else:
-            y_stepper = self._y_axis.motor.step_left
+            self._y_axis.motor.signal_go_left()
 
-        x_steps_done = 0
-        y_steps_done = 0
+        assert(self._x_axis.step_time == self._y_axis.step_time)
+        steps_sequence = create_xyz_steps_sequence(
+            self._x_axis.step_time,
+            self._x_axis.step_time * 10,
+            x_steps,
+            y_steps,
+            0
+        )
 
-        print(x_steps, y_steps)
-        while x_steps_done < x_steps or y_steps_done < y_steps:
-            if y_steps > 0:
-                if y_steps_done > 0:
-                    if (x_steps_done / y_steps_done > x_steps / y_steps):
-                        y_stepper(self._y_axis.step_time)
-                        y_steps_done += 1
-                    else:
-                        x_stepper(self._x_axis.step_time)
-                        x_steps_done += 1
-                else:
-                    y_stepper(self._y_axis.step_time)
-                    y_steps_done += 1
+        current_time = 0
+        for event_time, axis, pulse_type in steps_sequence:
+            motor = None
+            if axis == 'X':
+                 motor = self._x_axis.motor
+            elif axis == 'Y':
+                 motor = self._y_axis.motor
             else:
-                x_stepper(self._x_axis.step_time)
-                x_steps_done += 1
+                assert(False)
+
+            if abs(event_time - current_time) >= TOO_SMALL_TIME_TO_SLEEP:
+                time.sleep(event_time - current_time)
+                current_time = event_time
+
+            if pulse_type == 'UP':
+                motor.signal_pul_up()
+            elif pulse_type == 'DOWN':
+                motor.signal_pul_down()
+            else:
+                assert(False)
+
 
     def feed(self, gcode):
         if not self._initialized:
