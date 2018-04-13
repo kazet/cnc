@@ -25,15 +25,7 @@ $(document).ready(function() {
                 type: 'POST',
             });
         });
-        $(this).find('.run-gcode').bind('click', function() {
-            $.ajax('/gcode/', {
-                data: JSON.stringify({
-                    'gcode': $('textarea.gcode').val(),
-                }),
-                contentType: 'application/json',
-                type: 'POST',
-            });
-        });
+
         $(this).find('.run-gcode').bind('click', function() {
             $.ajax('/gcode/', {
                 data: JSON.stringify({
