@@ -5,10 +5,10 @@ $(document).ready(function() {
 
             $.ajax('/initialize/', {
                 type: 'POST',
-    	        success: function(data) {
+                success: function(data) {
                     button.attr('disabled', true);
                     button.text('Machine initialized');
-            	}
+                }
             });
         });
 
@@ -23,11 +23,25 @@ $(document).ready(function() {
                 }),
                 contentType: 'application/json',
                 type: 'POST',
-            	success: function(data) {
-    	            if (!data.success) {
-    	                alert(data.message);
-            	    }
-            	}
+                success: function(data) {
+                    if (!data.success) {
+                        alert(data.message);
+                    }
+                }
+            });
+        });
+        $(this).find('.run-gcode').bind('click', function() {
+            $.ajax('/gcode/', {
+                data: JSON.stringify({
+                    'gcode': $('textarea.gcode').val(),
+                }),
+                contentType: 'application/json',
+                type: 'POST',
+                success: function(data) {
+                    if (!data.success) {
+                        alert(data.message);
+                    }
+                }
             });
         });
     });
