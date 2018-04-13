@@ -1,3 +1,5 @@
+import sys
+
 from flask import (
     Flask,
 
@@ -9,6 +11,7 @@ from flask import (
 
 import gcode
 import config
+import machine_process
 
 app = Flask(__name__, static_url_path='')
 
@@ -21,28 +24,25 @@ def static_files(path):
 @app.route("/gcode/", methods=["POST"])
 def gcode_command():
     input_text = request.json['gcode']
-
-    try:
-        gcode.interpret(input_text)
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': e.message
-        })
-
-    return jsonify({
-        'success': True,
-        'message': 'OK'
-    })
+    machine_process.send_message_gcode(input_text)
+    return 'OK'
 
 
 @app.route("/initialize/", methods=["POST"])
 def initialize_command():
-    config.MACHINE.initialize()
-    return jsonify({
-        'success': True,
-        'message': 'OK'
-    })
+    machine_process.send_message_initialize()
+    return 'OK'
+
+
+@app.route("/abort/", methods=["POST"])
+def abort_command():
+    machine_process.kill()
+    return 'OK'
+
+
+@app.route("/get_logs/", methods=["POST"])
+def get_logs():
+    return machine_process.get_logs()
 
 
 @app.route("/")

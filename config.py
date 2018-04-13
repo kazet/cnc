@@ -7,6 +7,8 @@ import machine
 
 MILL_PIN_DRIVER = mill_pin_driver.RaspberryPiMillPinDriver()
 
+LOCK_PATH = '/tmp/cnc.lock'
+
 MACHINE = machine.Machine(
     x_axis=machine.MachineAxis(
         motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X'),

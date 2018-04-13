@@ -87,9 +87,12 @@
         <h1 class="title">G-code</h1>
         <div class="columns">
             <div class="column">
-                <textarea class="textarea" placeholder="Place G-code here..." rows="15"></textarea>
+                <textarea class="textarea gcode" placeholder="Place G-code here..." rows="15"></textarea>
             </div>
             <div class="column">
+            </div>
+            <div class="column">
+                <textarea class="textarea logs" readonly rows="15"></textarea>
             </div>
         </div>
         <div class="columns">
@@ -100,22 +103,17 @@
                 </button>
             </div>
             <div class="column">
-                <button class="button is-primary is-fullwidth">
+                <button class="button is-primary is-fullwidth run-gcode">
                     <span class="icon"><i class="fa fa-play"></i></span>
                     <span>Run</span>
                 </button>
             </div>
             <div class="column">
-                <button class="button is-primary is-fullwidth">
-                    <span class="icon"><i class="fa fa-pause"></i></span>
-                    <span>Pause</span>
-                </button>
-            </div>
-            <div class="column">
-                <button class="button is-primary is-fullwidth">
+                <button class="button is-danger is-fullwidth abort">
                     <span class="icon"><i class="fa fa-stop"></i></span>
-                    <span>Stop</span>
+                    <span>Abort</span>
                 </button>
+                <p class="help">Caution: aborting is <b>not</b> a graceful shutdown. May leave the machine in an inconsistent state, eg. PUL signal on motors enabled.</p>
             </div>
         </div>
     </div>
