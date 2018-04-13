@@ -32,11 +32,6 @@ $(document).ready(function() {
                 }),
                 contentType: 'application/json',
                 type: 'POST',
-                success: function(data) {
-                    if (!data.success) {
-                        alert(data.message);
-                    }
-                }
             });
         });
         $(this).find('.run-gcode').bind('click', function() {
