@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container" id="page-manager">
+        <div class="columns">
+            <div class="column is-one-quarter">
+                <h1 class="title">Management</h1>
+		<button class="button is-primary is-fullwidth initialize-trigger">
+                    <span class="icon"><i class="fa fa-sync"></i></span>
+		    <span>Initialize machine</span>
+                </button>
+                <h1 class="title">Move scale</h1>
+                <div class="control">
+                    <label class="radio">
+                        <input type="radio" name="move-scale" value="0.1">
+                        0.1mm
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="move-scale" value="1" checked>
+                        1mm
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="move-scale" value="10">
+                        10mm
+                    </label>
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <h1 class="title">Z axis</h1>
+                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="1">
+                    <span class="icon"><i class="fa fa-plus"></i></span>
+                </button>
+
+                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="-1">
+                    <span class="icon"><i class="fa fa-minus"></i></span>
+                </button>
+            </div>
+            <div class="column">
+                <h1 class="title">X&Y axes</h1>
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
+                        </button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
+                            <span class="icon"><i class="fa fa-arrow-up"></i></span>
+                        </button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
+                        </button>
+                    </div>
+                </div>
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="0" data-direction-z="0">
+                            <span class="icon"><i class="fa fa-arrow-left"></i></span>
+                        </button>
+                    </div>
+                    <div class="column">
+                        &nbsp;
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="0" data-direction-z="0">
+                            <span class="icon"><i class="fa fa-arrow-right"></i></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
+                        </button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
+                            <span class="icon"><i class="fa fa-arrow-down"></i></span>
+                        </button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1 class="title">G-code</h1>
+        <div class="columns">
+            <div class="column">
+                <textarea class="textarea" placeholder="Place G-code here..." rows="15"></textarea>
+            </div>
+            <div class="column">
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon"><i class="far fa-circle"></i></span>
+                    <span>Show XY boundaries</span>
+                </button>
+            </div>
+            <div class="column">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon"><i class="fa fa-play"></i></span>
+                    <span>Run</span>
+                </button>
+            </div>
+            <div class="column">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon"><i class="fa fa-pause"></i></span>
+                    <span>Pause</span>
+                </button>
+            </div>
+            <div class="column">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon"><i class="fa fa-stop"></i></span>
+                    <span>Stop</span>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
