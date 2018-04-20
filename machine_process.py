@@ -21,7 +21,7 @@ def worker_process(command_queue, log_queue):
         elif message == WorkerProcessMessage.GCODE:
             try:
                 start_time = time.time()
-                gcode.interpret(data)
+                gcode.interpret(config.MACHINE, data)
                 gcode_execution_time = time.time() - start_time
 
                 log_queue.put(

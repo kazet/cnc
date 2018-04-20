@@ -26,6 +26,23 @@ $(document).ready(function() {
             });
         });
 
+        $(this).find('.simulate').bind('click', function() {
+            $.ajax('/simulate/', {
+                data: JSON.stringify({
+                    'gcode': $('textarea.gcode').val(),
+                }),
+                contentType: 'application/json',
+                type: 'POST',
+                success: function(data) {
+                    $('.simulation-image').html('');
+                    img = $('<img />');
+                    img.attr('src', '/' + data);
+                    img.appendTo($('.simulation-image'));
+                }
+            });
+        });
+
+
         $(this).find('.run-gcode').bind('click', function() {
             $.ajax('/gcode/', {
                 data: JSON.stringify({

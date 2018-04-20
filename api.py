@@ -12,6 +12,7 @@ from flask import (
 import gcode
 import config
 import machine_process
+import moves_to_svg
 
 app = Flask(__name__, static_url_path='')
 
@@ -26,6 +27,18 @@ def gcode_command():
     input_text = request.json['gcode']
     machine_process.send_message_gcode(input_text)
     return 'OK'
+
+
+@app.route("/simulate/", methods=["POST"])
+def simulation_command():
+    input_text = request.json['gcode']
+    simulation_machine = config.create_simulation_machine()
+    gcode.interpret(simulation_machine, input_text)
+    moves = simulation_machine.simulated_moves
+
+    return moves_to_svg.moves_to_svg(
+        moves,
+    )
 
 
 @app.route("/initialize/", methods=["POST"])
