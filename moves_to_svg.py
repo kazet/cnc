@@ -1,9 +1,16 @@
+import math
 import svgwrite
 
 import utils
 
+def line_id_to_stroke(line_id):
+    if line_id % 10 == 0:
+        return svgwrite.rgb(50, 0, 0, '%')
+    else:
+        return svgwrite.rgb(70, 70, 70, '%')
 
-def moves_to_svg(moves, pixels_per_mm=100):
+
+def moves_to_svg(moves, pixels_per_mm=20):
     def scale_position(position):
         x, y = position
         return (pixels_per_mm * x, pixels_per_mm * y)
@@ -30,8 +37,30 @@ def moves_to_svg(moves, pixels_per_mm=100):
         (max_y - min_y) + 2 * margin,
     )
 
+    for line_id in range(math.floor(min_x / pixels_per_mm), math.ceil(max_x / pixels_per_mm) + 1):
+        stroke = line_id_to_stroke(line_id)
+
+        dwg.add(
+            dwg.line(
+                (line_id * pixels_per_mm, min_y),
+                (line_id * pixels_per_mm, max_y),
+                stroke=stroke))
+
+    for line_id in range(math.floor(min_y / pixels_per_mm), math.ceil(max_y / pixels_per_mm) + 1):
+        stroke = line_id_to_stroke(line_id)
+
+        dwg.add(
+            dwg.line(
+                (min_x, line_id * pixels_per_mm),
+                (max_x, line_id * pixels_per_mm),
+                stroke=stroke))
+
+
+
+    dwg.add(dwg.circle(center=(0, 0), r=0.5 * pixels_per_mm, fill='red'))
+
     for current in moves[1:]:
-        dwg.add(dwg.line(last, current, stroke=svgwrite.rgb(0, 0, 0, '%')))
+        dwg.add(dwg.line(last, current, stroke=svgwrite.rgb(0, 0, 0, '%'), stroke_width=3))
         last = current
 
     dwg.save()
