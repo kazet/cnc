@@ -38,6 +38,7 @@ def simulation_command():
 
     return moves_to_svg.moves_to_svg(
         moves,
+        float(request.json['tool_diameter'])
     )
 
 

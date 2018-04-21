@@ -30,6 +30,7 @@ $(document).ready(function() {
             $.ajax('/simulate/', {
                 data: JSON.stringify({
                     'gcode': $('textarea.gcode').val(),
+                    'tool_diameter': $('input.tool-diameter').val(),
                 }),
                 contentType: 'application/json',
                 type: 'POST',

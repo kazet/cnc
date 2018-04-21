@@ -10,12 +10,13 @@ def line_id_to_stroke(line_id):
         return svgwrite.rgb(70, 70, 70, '%')
 
 
-def moves_to_svg(moves, pixels_per_mm=20):
+def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
     def scale_position(position):
         x, y = position
         return (pixels_per_mm * x, pixels_per_mm * y)
 
-    margin = 10  # px
+    margin = pixels_per_mm * 2 * tool_diameter
+
     moves = list(map(scale_position, moves))
     min_x = min([x for (x, _) in moves])
     max_x = max([x for (x, _) in moves])
@@ -37,6 +38,21 @@ def moves_to_svg(moves, pixels_per_mm=20):
         (max_y - min_y) + 2 * margin,
     )
 
+    tool_move_fill_stroke = svgwrite.rgb(0, 0, 0, '%')
+    tool_move_direction_stroke = svgwrite.rgb(0, 0, 100, '%')
+
+    for turning_point in moves:
+        dwg.add(
+            dwg.circle(
+                center=turning_point,
+                r=tool_diameter * pixels_per_mm / 2.0,
+                fill=tool_move_fill_stroke))
+
+    for current in moves[1:]:
+        dwg.add(dwg.line(last, current, stroke=tool_move_fill_stroke, stroke_width=tool_diameter * pixels_per_mm))
+        dwg.add(dwg.line(last, current, stroke=tool_move_direction_stroke, stroke_width=3))
+        last = current
+
     for line_id in range(math.floor(min_x / pixels_per_mm), math.ceil(max_x / pixels_per_mm) + 1):
         stroke = line_id_to_stroke(line_id)
 
@@ -55,13 +71,7 @@ def moves_to_svg(moves, pixels_per_mm=20):
                 (max_x, line_id * pixels_per_mm),
                 stroke=stroke))
 
-
-
     dwg.add(dwg.circle(center=(0, 0), r=0.5 * pixels_per_mm, fill='red'))
-
-    for current in moves[1:]:
-        dwg.add(dwg.line(last, current, stroke=svgwrite.rgb(0, 0, 0, '%'), stroke_width=3))
-        last = current
 
     dwg.save()
 
