@@ -4,6 +4,7 @@ import pygcode.gcodes
 
 from steps_sequence import create_xyz_steps_sequence
 
+
 class MachineMode():
     ABSOLUTE = 0
     INCREMENTAL = 1
@@ -12,6 +13,7 @@ class MachineMode():
 class MachineUseException(Exception):
     def __init__(self, message):
         self.message = message
+
 
 class BaseMachineAxis():
     def __init__(self, mm_per_revolution, steps_per_revolution):
@@ -30,8 +32,11 @@ class BaseMachineAxis():
         else:
             assert(False)
 
+    def update_tool_position(self, steps):
+        self._tool_position += steps / self.steps_per_mm
+
     def steps_needed_to_move_by(self, amount_mm):
-        return (
+        return int(
             self._steps_per_revolution *
             amount_mm /
             self._mm_per_revolution
@@ -49,9 +54,6 @@ class SimulatedMachineAxis(BaseMachineAxis):
 
     def initialize(self):
         pass
-
-    def simulated_move(self, steps):
-        self._tool_position += steps / self.steps_per_mm
 
     def is_simulated(self):
         return True
@@ -179,12 +181,12 @@ class Machine():
         self._initialized = True
 
     def _coordinated_move(self, x_steps, y_steps):
+        self._x_axis.update_tool_position(x_steps)
+        self._y_axis.update_tool_position(y_steps)
+
         if self._simulated:
             assert self._x_axis.is_simulated()
             assert self._y_axis.is_simulated()
-
-            self._x_axis.simulated_move(x_steps)
-            self._y_axis.simulated_move(y_steps)
             self._simulated_moves.append((self._x_axis.tool_position, self._y_axis.tool_position))
             return
         else:
