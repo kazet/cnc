@@ -1,5 +1,10 @@
 $(document).ready(function() {
     $('#page-manager').each(function() {
+        function addToLogs(data) {
+            $('textarea.logs').val($('textarea.logs').val() + data);
+            $('textarea.logs').scrollTop($('textarea.logs')[0].scrollHeight);
+        }
+
         $(this).find('.initialize-trigger').bind('click', function() {
             var button = $(this);
 
@@ -39,6 +44,9 @@ $(document).ready(function() {
                     img = $('<img />');
                     img.attr('src', '/' + data);
                     img.appendTo($('.simulation-image'));
+                },
+                error: function(data) {
+                    addToLogs(data.responseText + '\n');
                 }
             });
         });
@@ -64,8 +72,7 @@ $(document).ready(function() {
             $.ajax('/get_logs/', {
                 type: 'POST',
                 success: function(data) {
-                    $('textarea.logs').val($('textarea.logs').val() + data);
-                    $('textarea.logs').scrollTop($('textarea.logs')[0].scrollHeight);
+                    addToLogs(data);
                 }
             });
         }, 500);

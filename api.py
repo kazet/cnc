@@ -32,14 +32,18 @@ def gcode_command():
 @app.route("/simulate/", methods=["POST"])
 def simulation_command():
     input_text = request.json['gcode']
-    simulation_machine = config.create_simulation_machine()
-    gcode.interpret(simulation_machine, input_text)
-    moves = simulation_machine.simulated_moves
+    
+    try:
+        simulation_machine = config.create_simulation_machine()
+        gcode.interpret(simulation_machine, input_text)
+        moves = simulation_machine.simulated_moves
 
-    return moves_to_svg.moves_to_svg(
-        moves,
-        float(request.json['tool_diameter'])
-    )
+        return moves_to_svg.moves_to_svg(
+            moves,
+            float(request.json['tool_diameter'])
+        )
+    except Exception as e:
+        return repr(e), 400
 
 
 @app.route("/initialize/", methods=["POST"])
