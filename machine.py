@@ -1,3 +1,4 @@
+import math
 import time
 
 import pygcode.gcodes
@@ -8,6 +9,12 @@ from steps_sequence import create_xyz_steps_sequence
 class MachineMode():
     ABSOLUTE = 0
     INCREMENTAL = 1
+
+
+class MachinePlane():
+    XY = 0
+    ZX = 1
+    YZ = 2
 
 
 class MachineUseException(Exception):
@@ -115,6 +122,7 @@ class MachineAxis(BaseMachineAxis):
 
 class Machine():
     def __init__(self, x_axis, y_axis, simulated=False):
+        self._plane = None
         self._mode = MachineMode.ABSOLUTE
         self._x_axis = x_axis
         self._y_axis = y_axis
@@ -142,12 +150,74 @@ class Machine():
         return self._simulated_moves
 
     def move_to(self, x, y):
+        self.move_by(
+            x - self._x_axis.tool_position,
+            y - self._y_axis.tool_position,
+        )
+
+    def move_by(self, x, y):
         self._x_axis.compensate_for_backlash(x)
         self._y_axis.compensate_for_backlash(y)
 
         x_steps = self._x_axis.steps_needed_to_move_by(x)
         y_steps = self._y_axis.steps_needed_to_move_by(y)
-        self._coordinated_move(x_steps, y_steps)
+        self._coordinated_move_by(x_steps, y_steps)
+
+    def arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
+        RADIUS_EPSILON = 10**(-2)
+        NUM_ANGULAR_STEPS = 60
+
+        start_tool_position_x = self._x_axis.tool_position
+        start_tool_position_y = self._y_axis.tool_position
+
+        if angular_direction not in [-1, 1]:
+            raise Exception("Unknown angular direction: %s" % repr(angular_direction))
+
+        if self._plane is None:
+            raise Exception("Unable to draw an arc - no plane seleted")
+        elif self._plane != MachinePlane.XY:
+            raise NotImplementedError("Non-XY arcs are not supported")
+
+        if 'I' and 'J' in parameters.keys():
+            center_x = parameters['I']
+            center_y = parameters['J']
+        elif 'R' in parameters.keys():
+            raise NotImplementedError()
+        else:
+            raise Exception("Expected either I and J or R in GCode parameters")
+
+        if finish_z != 0:
+            raise NotImplementedError("Helical moves are not supported")
+
+        angle1 = math.atan2(0 - center_y, 0 - center_x)
+        angle2 = math.atan2(finish_y - center_y, finish_x - center_x)
+
+        radius = self._distance((0, 0), (center_x, center_y))
+        radius2 = self._distance((finish_x, finish_y), (center_x, center_y))
+
+        if abs(radius - radius2) > RADIUS_EPSILON:
+            raise Exception("Radia mismatch: %0.6f vs %.06f" % (
+                radius,
+                radius2,
+            ))
+
+        angle_step = angular_direction * (2 * math.pi) / NUM_ANGULAR_STEPS
+        one_step_distance = self._distance(
+            (0, radius),
+            (radius * math.sin(angle_step), radius * math.cos(angle_step)))
+        angle = angle1
+
+        while True:
+            current_x = center_x + radius * math.cos(angle)
+            current_y = center_y + radius * math.sin(angle)
+
+            if self._distance((current_x, current_y), (finish_x, finish_y)) < one_step_distance:
+                break
+
+            self.move_to(start_tool_position_x + current_x, start_tool_position_y + current_y)
+            angle += angle_step
+
+        self.move_to(start_tool_position_x + finish_x, start_tool_position_y + finish_y)
 
     def feed(self, gcode):
         if not self._initialized:
@@ -157,6 +227,28 @@ class Machine():
             self._mode = MachineMode.INCREMENTAL
         elif isinstance(gcode, pygcode.gcodes.GCodeAbsoluteDistanceMode):
             self._mode = MachineMode.ABSOLUTE
+        elif isinstance(gcode, pygcode.gcodes.GCodeSelectXYPlane):
+            self._plane = MachinePlane.XY
+        elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW):
+            x = self._x_axis.coordinates_to_incremental(
+                gcode.get_param_dict().get('X', 0),
+                self._mode,
+            )
+
+            y = self._y_axis.coordinates_to_incremental(
+                gcode.get_param_dict().get('Y', 0),
+                self._mode,
+            )
+
+            if isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW):
+                angular_direction = -1
+            elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW):
+                angular_direction = 1
+            else:
+                assert(False)
+
+            self.arc(angular_direction, x, y, 0, gcode.get_param_dict())
+
         elif isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
             if len(set(gcode.get_param_dict().keys()) - set(['X', 'Y', 'Z'])) > 0:
                 raise MachineUseException("Unknown axes in %s" % repr(gcode.get_param_dict()))
@@ -171,7 +263,7 @@ class Machine():
                 self._mode,
             )
 
-            self.move_to(x, y)
+            self.move_by(x, y)
         else:
             raise MachineUseException("Unknown GCode: %s" % gcode.__class__)
 
@@ -180,7 +272,13 @@ class Machine():
         self._y_axis.initialize()
         self._initialized = True
 
-    def _coordinated_move(self, x_steps, y_steps):
+    def _distance(self, point1, point2):
+        x1, y1 = point1
+        x2, y2 = point2
+
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+
+    def _coordinated_move_by(self, x_steps, y_steps):
         self._x_axis.update_tool_position(x_steps)
         self._y_axis.update_tool_position(y_steps)
 
