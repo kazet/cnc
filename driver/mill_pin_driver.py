@@ -4,13 +4,13 @@ import RPi.GPIO
 class RaspberryPiMillPinDriver:
     MOTOR_PINS = {
         'X': {
+            'DIR': 35,
+            'PUL': 37,
+        },
+        'Y': {
             'DIR': 33,
             'PUL': 31,
         },
-        'Y': {
-            'DIR': 35,
-            'PUL': 37,
-        }
     }
 
     def __init__(self):
