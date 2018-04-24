@@ -65,6 +65,9 @@ def main():
     with open(args.input_file, 'r') as input_f:
         with open(args.output_file, 'w') as output_f:
             for input_line in input_f:
+                if input_line.startswith('#'):
+                    continue
+
                 line = pygcode.Line(input_line)
                 for gcode in line.block.gcodes:
                     output_gcode = translator_and_scaler.convert(
