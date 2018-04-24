@@ -59,6 +59,9 @@ class SimulatedMachineAxis(BaseMachineAxis):
     def steps_per_mm(self):
         return self._steps_per_revolution / self._mm_per_revolution
 
+    def zero_tool_position(self):
+        self._tool_position = 0
+
     def initialize(self):
         pass
 
@@ -88,6 +91,10 @@ class MachineAxis(BaseMachineAxis):
 
     def is_simulated(self):
         return False
+
+    def zero_tool_position(self):
+        # TODO positioner
+        self._tool_position = 0
 
     def initialize(self):
         # Situation ---|???????| - partially unknown tool position
@@ -148,6 +155,10 @@ class Machine():
         assert self._x_axis.is_simulated()
         assert self._y_axis.is_simulated()
         return self._simulated_moves
+
+    def zero_tool_positions(self):
+        self._x_axis.zero_tool_position()
+        self._y_axis.zero_tool_position()
 
     def move_to(self, x, y):
         self.move_by(

@@ -2,6 +2,8 @@ from pygcode import Line
 
 
 def interpret(machine, input_text):
+    machine.zero_tool_positions()
+
     for input_line in input_text.split('\n'):
         if input_line.startswith('#'):
             continue
