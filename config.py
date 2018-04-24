@@ -15,14 +15,14 @@ STEP_TIME = 0.0008
 
 MACHINE = machine.Machine(
     x_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X'),
+        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X', is_inverse=True),
         backlash=0.5,
         mm_per_revolution=MM_PER_REVOLUTION,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
     y_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Y'),
+        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Y', is_inverse=False),
         backlash=0.25,
         mm_per_revolution=MM_PER_REVOLUTION,
         steps_per_revolution=STEPS_PER_REVOLUTION,
