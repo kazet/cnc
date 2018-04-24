@@ -31,6 +31,10 @@ class BaseMachineAxis():
     def tool_position(self):
         return self._tool_position
 
+    @property
+    def steps_per_mm(self):
+        return self._steps_per_revolution / self._mm_per_revolution
+
     def coordinates_to_incremental(self, pos, mode):
         if mode == MachineMode.ABSOLUTE:
             return pos - self._tool_position
@@ -54,10 +58,6 @@ class SimulatedMachineAxis(BaseMachineAxis):
     def __init__(self, mm_per_revolution, steps_per_revolution):
         super().__init__(mm_per_revolution, steps_per_revolution)
         self._tool_position = 0
-
-    @property
-    def steps_per_mm(self):
-        return self._steps_per_revolution / self._mm_per_revolution
 
     def initialize(self):
         pass
