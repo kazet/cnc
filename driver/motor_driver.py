@@ -1,20 +1,21 @@
 import time
 
 class MotorDriver:
-    def __init__(self, mill_pin_driver, axis):
+    def __init__(self, mill_pin_driver, axis, is_inverse=False):
         self._mill_pin_driver = mill_pin_driver
         self._axis = axis
+        self._is_inverse = is_inverse
 
     def signal_go_left(self):
         self._mill_pin_driver.output(
             self._mill_pin_driver.MOTOR_PINS[self._axis]['DIR'],
-            1
+            0 if self._is_inverse else 1
         )
 
     def signal_go_right(self):
         self._mill_pin_driver.output(
             self._mill_pin_driver.MOTOR_PINS[self._axis]['DIR'],
-            0
+            1 if self._is_inverse else 0
         )
 
     def signal_pul_up(self):
