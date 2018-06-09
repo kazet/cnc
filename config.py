@@ -11,11 +11,11 @@ LOCK_PATH = '/tmp/cnc.lock'
 
 MM_PER_REVOLUTION = 3
 STEPS_PER_REVOLUTION = 200.0 * 32.0
-STEP_TIME = 0.0008
+STEP_TIME = 0.000008
 
 MACHINE = machine.Machine(
     x_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X', is_inverse=True),
+        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X', is_inverse=False),
         backlash=0.5,
         mm_per_revolution=MM_PER_REVOLUTION,
         steps_per_revolution=STEPS_PER_REVOLUTION,
