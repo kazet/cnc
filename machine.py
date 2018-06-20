@@ -126,13 +126,19 @@ class MachineAxis(BaseMachineAxis):
     def _steps_for_mm(self, mm):
         return self._steps_per_revolution * mm / self._mm_per_revolution
 
+    def steps_per_one_mm(self):
+        return self._steps_per_revolution / self._mm_per_revolution
+
 
 class Machine():
+    DEFAULT_FEED_RATE = 120
+
     def __init__(self, x_axis, y_axis, simulated=False):
         self._plane = None
         self._mode = MachineMode.ABSOLUTE
         self._x_axis = x_axis
         self._y_axis = y_axis
+        self._feed_rate = Machine.DEFAULT_FEED_RATE
         self._simulated = simulated
         self._simulated_moves = [(0, 0)]
 
@@ -166,13 +172,13 @@ class Machine():
             y - self._y_axis.tool_position,
         )
 
-    def move_by(self, x, y):
+    def move_by(self, x, y, speed):
         self._x_axis.compensate_for_backlash(x)
         self._y_axis.compensate_for_backlash(y)
 
         x_steps = self._x_axis.steps_needed_to_move_by(x)
         y_steps = self._y_axis.steps_needed_to_move_by(y)
-        self._coordinated_move_by(x_steps, y_steps)
+        self._coordinated_move_by(x_steps, y_steps, speed)
 
     def arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
         RADIUS_EPSILON = 10**(-2)
@@ -274,7 +280,9 @@ class Machine():
                 self._mode,
             )
 
-            self.move_by(x, y)
+            self.move_by(x, y, self._feed_rate)
+        elif isinstance(gcode, pygcode.gcodes.GCodeFeedRate):
+            self._feed_rate = gcode.word.value
         else:
             raise MachineUseException("Unknown GCode: %s" % gcode.__class__)
 
@@ -289,7 +297,13 @@ class Machine():
 
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-    def _coordinated_move_by(self, x_steps, y_steps):
+    def _coordinated_move_by(self, x_steps, y_steps, speed):
+        length = math.sqrt(
+            (x_steps / self._x_axis.steps_per_one_mm()) ** 2 +
+            (y_steps / self._y_axis.steps_per_one_mm()) ** 2)  # move length in mm
+        total_time = 60.0 * length / speed  # speed is in mm/min
+        step_time = total_time / max(abs(x_steps), abs(y_steps))
+
         self._x_axis.update_tool_position(x_steps)
         self._y_axis.update_tool_position(y_steps)
 
@@ -319,8 +333,8 @@ class Machine():
             assert self._x_axis.step_time == self._y_axis.step_time
 
             steps_sequence = create_xyz_steps_sequence(
-                self._x_axis.step_time,
-                self._x_axis.step_time * 10,
+                step_time,
+                step_time * 10,
                 x_steps,
                 y_steps,
                 0
