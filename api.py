@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 from flask import (
     Flask,
@@ -43,6 +44,7 @@ def simulation_command():
             float(request.json['tool_diameter'])
         )
     except Exception as e:
+        traceback.print_exc()
         return repr(e), 400
 
 

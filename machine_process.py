@@ -1,6 +1,7 @@
 import multiprocessing
 import queue
 import time
+import traceback
 
 import config
 import gcode
@@ -29,6 +30,7 @@ def worker_process(command_queue, log_queue):
                     gcode_execution_time,
                 )
             except Exception as e:
+                traceback.print_exc()
                 log_queue.put("Unable to execute gcode: %s" % repr(e))
         else:
             assert(False)
