@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 
@@ -67,4 +68,8 @@ def get_logs():
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template('index.html', examples=[
+        name
+        for name in os.listdir(os.path.join(os.path.dirname(__file__), 'templates', 'examples'))
+        if name != '.' and name != '..'
+    ])

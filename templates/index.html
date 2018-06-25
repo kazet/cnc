@@ -144,28 +144,21 @@
         </div>
         <h1 class="title">G-code examples/help</h1>
         <div class="columns">
-            <div class="column">
-                <div class="box">
-                    <h2 class="subtitle has-small-bottom-margin">Example 1: square</h2>
-<pre>G91
-G0 X20 Y0
-G0 X0 Y20
-G0 X-20 Y0
-G0 X0 Y-20</pre>
+            <div class="column is-three-quarters">
+                <div class="example-list tabs">
+                    <ul>
+                        {% for name in examples %}
+                            <li><a href="#" data-example-id="{{ loop.index }}">{{ name }}</a></li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="box">
-                    <h2 class="subtitle has-small-bottom-margin">Example 2: circle</h2>
-<pre>G90
-G17
-G2 X0 Y40 I0 J20
-G2 X0 Y0 I0 J-20</pre>
-                </div>
-            </div>
-            <div class="column">
-                <div class="box">
-                    <h2 class="subtitle has-small-bottom-margin">Example 2: heart</h2>
-                    <pre>{% include "examples/heart.gcode" %}</pre>
-                </div>
+
+                {% for name in examples %}
+                    <div class="box example" data-id="{{ loop.index }}">
+                        <h2 class="subtitle has-small-bottom-margin">Example {{ loop.index }}: {{ name }}</h2>
+                        <pre>{% include 'examples/' + name %}</pre>
+                    </div>
+                {% endfor %}
             </div>
             <div class="column">
                 <h2 class="subtitle has-small-bottom-margin">Help</h2>
