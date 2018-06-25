@@ -295,6 +295,9 @@ class Machine():
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
     def _coordinated_move_by(self, x_steps, y_steps, speed):
+        if x_steps == 0 and y_steps == 0:
+            return
+
         self._x_axis.update_tool_position(x_steps)
         self._y_axis.update_tool_position(y_steps)
 

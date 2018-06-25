@@ -52,11 +52,11 @@ class TranslatorAndScaler():
 def main():
     parser = argparse.ArgumentParser(
         description='Perform G-Code xyz translation')
-    parser.add_argument('--input_file', help='The input file name', required=True)
-    parser.add_argument('--output_file', help='The output file name', required=True)
-    parser.add_argument('--x', type=float, help='X amout to be translated', required=True)
-    parser.add_argument('--y', type=float, help='Y amout to be translated', required=True)
-    parser.add_argument('--z', type=float, help='Z amout to be translated', required=True)
+    parser.add_argument('--input-file', dest='input_file', help='The input file name', required=True)
+    parser.add_argument('--output-file', dest='output_file', help='The output file name', required=True)
+    parser.add_argument('--x', type=float, help='X amout to be translated', default=0)
+    parser.add_argument('--y', type=float, help='Y amout to be translated', default=0)
+    parser.add_argument('--z', type=float, help='Z amout to be translated', default=0)
     parser.add_argument('--scale', type=float, help='scale', default=1)
     args = parser.parse_args()
 
