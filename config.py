@@ -1,11 +1,11 @@
 from driver import (
-#    mill_pin_driver,
+    mill_pin_driver,
     motor_driver,
 )
 
 import machine
 
-MILL_PIN_DRIVER = None  #mill_pin_driver.RaspberryPiMillPinDriver()
+MILL_PIN_DRIVER = mill_pin_driver.RaspberryPiMillPinDriver()
 
 LOCK_PATH = '/tmp/cnc.lock'
 
