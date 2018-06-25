@@ -76,5 +76,13 @@ $(document).ready(function() {
                 }
             });
         }, 500);
+
+        $('.example').hide();
+        $(this).find('.example-list a').bind('click', function() {
+            $('.example').hide();
+            $('.example[data-id=' + $(this).data('example-id') + ']').show();
+
+            return false;
+        });
     });
 });
