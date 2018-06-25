@@ -1,3 +1,5 @@
+# Warning: the image is not centered!
+
 G90
 G17
 G00 X0 Y0 Z0
