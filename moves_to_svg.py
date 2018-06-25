@@ -15,14 +15,9 @@ def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
         x, y = position
         return (pixels_per_mm * x, pixels_per_mm * y)
 
-    def flip_y(position):
-        x, y = position
-        return (x, -y)
-
     margin = pixels_per_mm * 2 * tool_diameter
 
     moves = list(map(scale_position, moves))
-    moves = list(map(flip_y, moves))
 
     min_x = min([x for (x, _) in moves])
     max_x = max([x for (x, _) in moves])
