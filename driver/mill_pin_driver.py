@@ -11,6 +11,10 @@ class RaspberryPiMillPinDriver:
             'DIR': 33,
             'PUL': 31,
         },
+        'Z': {
+            'DIR': 36,
+            'PUL': 38,
+        },
     }
 
     def __init__(self):

@@ -11,6 +11,10 @@ def line_id_to_stroke(line_id):
 
 
 def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
+    # hide Z axis
+    moves = [(x, y) for (x, y, _) in moves]
+    # TODO don't hide Z axis
+
     def scale_position(position):
         x, y = position
         return (pixels_per_mm * x, pixels_per_mm * y)

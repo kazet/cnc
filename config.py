@@ -28,6 +28,13 @@ MACHINE = machine.Machine(
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
+    z_axis=machine.MachineAxis(
+        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Z', is_inverse=True),
+        backlash=0,
+        mm_per_revolution=4,
+        steps_per_revolution=STEPS_PER_REVOLUTION,
+        step_time=STEP_TIME,
+    ),
 )
 
 def create_simulation_machine():
@@ -38,6 +45,10 @@ def create_simulation_machine():
         ),
         y_axis=machine.SimulatedMachineAxis(
             mm_per_revolution=MM_PER_REVOLUTION,
+            steps_per_revolution=STEPS_PER_REVOLUTION,
+        ),
+        z_axis=machine.SimulatedMachineAxis(
+            mm_per_revolution=4,
             steps_per_revolution=STEPS_PER_REVOLUTION,
         ),
         simulated=True,
