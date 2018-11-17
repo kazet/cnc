@@ -80,6 +80,7 @@ class MachineAxis(BaseMachineAxis):
         self._positioner_position = None
         self._backlash = backlash
         self._step_time = step_time
+        self._last_sign = 0
 
     @property
     def step_time(self):
@@ -121,7 +122,24 @@ class MachineAxis(BaseMachineAxis):
         else:  # amount < 0
             sign = -1
 
-        pass # TODO
+        print("B", sign, self._last_sign, self._motor._axis)
+        if sign == 1:
+            if self._last_sign == 0:
+                for i in range(int(self._steps_for_mm(self._backlash / 2.0))):
+                    self._motor.step_left(self._step_time)
+            elif self._last_sign == -1:
+                for i in range(int(self._steps_for_mm(self._backlash))):
+                    self._motor.step_left(self._step_time)
+
+            self._last_sign = sign
+        elif sign == -1:
+            if self._last_sign == 0:
+                for i in range(int(self._steps_for_mm(self._backlash / 2.0))):
+                    self._motor.step_right(self._step_time)
+            elif self._last_sign == 1:
+                for i in range(int(self._steps_for_mm(self._backlash))):
+                    self._motor.step_right(self._step_time)
+            self._last_sign = sign
 
     def _steps_for_mm(self, mm):
         return self._steps_per_revolution * mm / self._mm_per_revolution
