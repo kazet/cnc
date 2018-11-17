@@ -5,6 +5,10 @@ $(document).ready(function() {
             $('textarea.logs').scrollTop($('textarea.logs')[0].scrollHeight);
         }
 
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/python");
+
         $(this).find('.initialize-trigger').bind('click', function() {
             var button = $(this);
 
@@ -34,7 +38,7 @@ $(document).ready(function() {
         $(this).find('.simulate').bind('click', function() {
             $.ajax('/simulate/', {
                 data: JSON.stringify({
-                    'gcode': $('textarea.gcode').val(),
+                    'gcode': editor.getValue(),
                     'tool_diameter': $('input.tool-diameter').val(),
                 }),
                 contentType: 'application/json',
@@ -55,7 +59,7 @@ $(document).ready(function() {
         $(this).find('.run-gcode').bind('click', function() {
             $.ajax('/gcode/', {
                 data: JSON.stringify({
-                    'gcode': $('textarea.gcode').val(),
+                    'gcode': editor.getValue(),
                 }),
                 contentType: 'application/json',
                 type: 'POST',

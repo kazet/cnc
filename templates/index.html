@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="container" id="page-manager">
         <div class="columns">
@@ -106,10 +112,14 @@
                 </div>
             </div>
         </div>
-        <h1 class="title">G-code</h1>
+        <h1 class="title">Python outputting code</h1>
         <div class="columns">
             <div class="column">
-                <textarea class="textarea gcode" placeholder="Place G-code here..." rows="15"></textarea>
+                <div class="box">
+                    <b>from examples.snowman import code as snowman</b><br/>
+                    <b>print(translate_and_scale(snowman(), scale=0.1))</b>
+                </div>
+                <div id="editor" class="gcode"></div>
             </div>
             <div class="column simulation-image">
             </div>
@@ -159,10 +169,10 @@
                     </ul>
                 </div>
 
-                {% for name in examples %}
+                {% for name, content in examples %}
                     <div class="box example" data-id="{{ loop.index }}">
                         <h2 class="subtitle has-small-bottom-margin">Example {{ loop.index }}: {{ name }}</h2>
-                        <pre>{% include 'examples/' + name %}</pre>
+                        <pre>{{ content }}</pre>
                     </div>
                 {% endfor %}
             </div>

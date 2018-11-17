@@ -1,7 +1,7 @@
 import math
 import svgwrite
 
-import utils
+from utils.random import random_token
 
 def line_id_to_stroke(line_id):
     if line_id % 10 == 0:
@@ -29,7 +29,7 @@ def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
     max_y = max([y for (_, y) in moves])
 
     last = moves[0]
-    token = utils.random_token()
+    token = random_token()
     file_name = 'static/%s.svg' % token
     dwg = svgwrite.Drawing(
         file_name,

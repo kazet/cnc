@@ -1,3 +1,9 @@
 .has-small-bottom-margin {
     margin-bottom: 9px !important;
 }
+
+#editor {
+    width: 100%;
+    height: 400px;
+    font-size: 16px;
+}
