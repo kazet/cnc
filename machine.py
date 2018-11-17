@@ -146,7 +146,7 @@ class MachineAxis(BaseMachineAxis):
 
 
 class Machine():
-    DEFAULT_FEED_RATE = 120
+    DEFAULT_FEED_RATE = 1000
 
     def __init__(self, x_axis, y_axis, z_axis, simulated=False):
         self._plane = None
