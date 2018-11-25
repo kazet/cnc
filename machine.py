@@ -77,7 +77,6 @@ class MachineAxis(BaseMachineAxis):
         super().__init__(mm_per_revolution, steps_per_revolution)
         self._motor = motor
         self._tool_position = None
-        self._positioner_position = None
         self._backlash = backlash
         self._step_time = step_time
         self._last_sign = 0
@@ -94,7 +93,6 @@ class MachineAxis(BaseMachineAxis):
         return False
 
     def zero_tool_position(self):
-        # TODO positioner
         self._tool_position = 0
 
     def initialize(self):
@@ -112,7 +110,6 @@ class MachineAxis(BaseMachineAxis):
 
         # Situation ---|   T   |
         self._tool_position = 0
-        self._positioner_position = -self._backlash / 2.0
 
     def compensate_for_backlash(self, amount):
         if amount > 0:
@@ -122,7 +119,6 @@ class MachineAxis(BaseMachineAxis):
         else:  # amount < 0
             sign = -1
 
-        print("B", sign, self._last_sign, self._motor._axis)
         if sign == 1:
             if self._last_sign == 0:
                 for i in range(int(self._steps_for_mm(self._backlash / 2.0))):
@@ -305,20 +301,29 @@ class Machine():
             if len(set(gcode.get_param_dict().keys()) - set(['X', 'Y', 'Z'])) > 0:
                 raise MachineUseException("Unknown axes in %s" % repr(gcode.get_param_dict()))
 
-            x = self._x_axis.coordinates_to_incremental(
-                gcode.get_param_dict().get('X', 0),
-                self._mode,
-            )
+            if 'X' in gcode.get_param_dict():
+                x = self._x_axis.coordinates_to_incremental(
+                    gcode.get_param_dict()['X'],
+                    self._mode,
+                )
+            else:
+                x = 0
 
-            y = self._y_axis.coordinates_to_incremental(
-                gcode.get_param_dict().get('Y', 0),
-                self._mode,
-            )
+            if 'Y' in gcode.get_param_dict():
+                y = self._y_axis.coordinates_to_incremental(
+                    gcode.get_param_dict()['Y'],
+                    self._mode,
+                )
+            else:
+                y = 0
 
-            z = self._y_axis.coordinates_to_incremental(
-                gcode.get_param_dict().get('Z', 0),
-                self._mode,
-            )
+            if 'Z' in gcode.get_param_dict():
+                z = self._y_axis.coordinates_to_incremental(
+                    gcode.get_param_dict()['Z'],
+                    self._mode,
+                )
+            else:
+                z = 0
 
             self.move_by(x, y, z)
         elif isinstance(gcode, pygcode.gcodes.GCodeFeedRate):
