@@ -163,7 +163,7 @@
             <div class="column is-three-quarters">
                 <div class="example-list tabs">
                     <ul>
-                        {% for name in examples %}
+                        {% for name, content in examples %}
                             <li><a href="#" data-example-id="{{ loop.index }}">{{ name }}</a></li>
                         {% endfor %}
                     </ul>
