@@ -28,7 +28,7 @@ $(document).ready(function() {
             var z = parseFloat($(this).data('direction-z')) * scale;
             $.ajax('/gcode/', {
                 data: JSON.stringify({
-                    'gcode': 'G91 G00 X' + x + ' Y' + y + ' Z' + z
+                    'gcode': 'print("""G91 G00 X' + x + ' Y' + y + ' Z' + z + '""")'
                 }),
                 contentType: 'application/json',
                 type: 'POST',

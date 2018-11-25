@@ -244,6 +244,9 @@ class Machine():
                 radius2,
             ))
 
+        if abs(radius) <= RADIUS_EPSILON:
+            raise Exception("Null radius")
+
         angle_step = angular_direction * (2 * math.pi) / NUM_ANGULAR_STEPS
         one_step_distance = self._distance(
             (0, radius, 0),

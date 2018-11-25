@@ -22,8 +22,11 @@ class TranslatorAndScaler():
             return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW) or isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
             if self._mode == MachineMode.ABSOLUTE:
-                gcode.params['X'].value += x
-                gcode.params['Y'].value += y
+                if 'X' in gcode.params:
+                    gcode.params['X'].value += x
+
+                if 'Y' in gcode.params:
+                    gcode.params['Y'].value += y
 
                 if 'Z' in gcode.params:
                     gcode.params['Z'].value += z
@@ -32,8 +35,11 @@ class TranslatorAndScaler():
             else:
                 assert(False)
 
-            gcode.params['X'].value *= scale
-            gcode.params['Y'].value *= scale
+            if 'X' in gcode.params:
+                gcode.params['X'].value *= scale
+
+            if 'Y' in gcode.params:
+                gcode.params['Y'].value *= scale
 
             if 'Z' in gcode.params:
                 gcode.params['Z'].value *= scale
