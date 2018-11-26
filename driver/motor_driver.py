@@ -32,13 +32,13 @@ class MotorDriver:
 
     def step_left(self, step_time):
         self.signal_go_left()
-        self.signal_pul_up()
-        time.sleep(step_time / 2.0)
-        self.signal_pul_down()
-        time.sleep(step_time / 2.0)
+        self.step(step_time)
 
     def step_right(self, step_time):
         self.signal_go_right()
+        self.step(step_time)
+
+    def step(self, step_time):
         self.signal_pul_up()
         time.sleep(step_time / 2.0)
         self.signal_pul_down()

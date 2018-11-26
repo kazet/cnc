@@ -367,9 +367,6 @@ class Machine():
                 (y_steps / self._y_axis.steps_per_mm) ** 2 +
                 (z_steps / self._z_axis.steps_per_mm) ** 2)  # move length in mm
             total_time = 60.0 * length / speed  # speed is in mm/min
-            step_time = total_time / max(abs(x_steps), abs(y_steps), abs(z_steps))
-
-            TOO_SMALL_TIME_TO_SLEEP = 10 ** (-6)
 
             if x_steps < 0:
                 x_steps = abs(x_steps)
@@ -393,15 +390,14 @@ class Machine():
             assert self._y_axis.step_time == self._z_axis.step_time
 
             steps_sequence = create_xyz_steps_sequence(
-                step_time,
-                step_time * 10,
                 x_steps,
                 y_steps,
                 z_steps,
             )
+            step_time = total_time / len(steps_sequence)
 
             current_time = 0
-            for event_time, axis, pulse_type in steps_sequence:
+            for event_time, axis in steps_sequence:
                 motor = None
                 if axis == 'X':
                      motor = self._x_axis.motor
@@ -412,13 +408,4 @@ class Machine():
                 else:
                     assert(False)
 
-                if abs(event_time - current_time) >= TOO_SMALL_TIME_TO_SLEEP:
-                    time.sleep(event_time - current_time)
-                    current_time = event_time
-
-                if pulse_type == 'UP':
-                    motor.signal_pul_up()
-                elif pulse_type == 'DOWN':
-                    motor.signal_pul_down()
-                else:
-                    assert(False)
+                motor.step(step_time)
