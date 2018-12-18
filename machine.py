@@ -281,6 +281,8 @@ class Machine():
             self._plane = MachinePlane.XY
         elif isinstance(gcode, pygcode.gcodes.GCodeLineNumber):
             pass
+        elif isinstance(gcode, pygcode.gcodes.GCodeUseMillimeters):
+            pass
         elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW):
             x = self._x_axis.coordinates_to_incremental(
                 gcode.get_param_dict().get('X', 0),

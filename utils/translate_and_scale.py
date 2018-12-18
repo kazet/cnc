@@ -20,7 +20,17 @@ class TranslatorAndScaler():
             return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeSelectXYPlane):
             return gcode
-        elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW) or isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
+        elif isinstance(gcode, pygcode.gcodes.GCodeFeedRate):
+            return gcode
+        elif isinstance(gcode, pygcode.gcodes.GCodeEndProgram):
+            return gcode
+        elif isinstance(gcode, pygcode.gcodes.GCodeUseMillimeters):
+            return gcode
+        elif (
+                isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or
+                isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW) or
+                isinstance(gcode, pygcode.gcodes.GCodeRapidMove) or
+                isinstance(gcode, pygcode.gcodes.GCodeLinearMove)):
             if self._mode == MachineMode.ABSOLUTE:
                 if 'X' in gcode.params:
                     gcode.params['X'].value += x
