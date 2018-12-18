@@ -143,9 +143,10 @@ class MachineAxis(BaseMachineAxis):
 
 class Machine():
     DEFAULT_FEED_RATE = 1000
+    RAPID_MOVE_FEED_RATE = 5000
 
     def __init__(self, x_axis, y_axis, z_axis, simulated=False):
-        self._plane = None
+        self._plane = MachinePlane.XY
         self._mode = MachineMode.ABSOLUTE
         self._x_axis = x_axis
         self._y_axis = y_axis
@@ -191,7 +192,7 @@ class Machine():
             z - self._z_axis.tool_position,
         )
 
-    def move_by(self, x, y, z):
+    def move_by(self, x, y, z, feed_rate=None):
         self._x_axis.compensate_for_backlash(x)
         self._y_axis.compensate_for_backlash(y)
         self._z_axis.compensate_for_backlash(z)
@@ -199,7 +200,11 @@ class Machine():
         x_steps = self._x_axis.steps_needed_to_move_by(x)
         y_steps = self._y_axis.steps_needed_to_move_by(y)
         z_steps = self._z_axis.steps_needed_to_move_by(z)
-        self._coordinated_move_by(x_steps, y_steps, z_steps, self._feed_rate)
+
+        if feed_rate is None:
+            self._coordinated_move_by(x_steps, y_steps, z_steps, feed_rate)
+        else:
+            self._coordinated_move_by(x_steps, y_steps, z_steps, self._feed_rate)
 
     def arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
         RADIUS_EPSILON = 10**(-2)
@@ -271,6 +276,8 @@ class Machine():
             self._mode = MachineMode.ABSOLUTE
         elif isinstance(gcode, pygcode.gcodes.GCodeSelectXYPlane):
             self._plane = MachinePlane.XY
+        elif isinstance(gcode, pygcode.gcodes.GCodeLineNumber):
+            pass
         elif isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW) or isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW):
             x = self._x_axis.coordinates_to_incremental(
                 gcode.get_param_dict().get('X', 0),
@@ -297,7 +304,7 @@ class Machine():
 
             self.arc(angular_direction, x, y, 0, gcode.get_param_dict())
 
-        elif isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
+        elif isinstance(gcode, pygcode.gcodes.GCodeRapidMove) or isinstance(gcode, pygcode.gcodes.GCodeLinearMove):
             if len(set(gcode.get_param_dict().keys()) - set(['X', 'Y', 'Z'])) > 0:
                 raise MachineUseException("Unknown axes in %s" % repr(gcode.get_param_dict()))
 
@@ -318,14 +325,20 @@ class Machine():
                 y = 0
 
             if 'Z' in gcode.get_param_dict():
-                z = self._y_axis.coordinates_to_incremental(
+                z = self._z_axis.coordinates_to_incremental(
                     gcode.get_param_dict()['Z'],
                     self._mode,
                 )
             else:
                 z = 0
 
-            self.move_by(x, y, z)
+            if isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
+                self.move_by(x, y, z, Machine.RAPID_MOVE_FEED_RATE)
+            elif isinstance(gcode, pygcode.gcodes.GCodeLinearMove):
+                self.move_by(x, y, z)
+            else:
+                assert(False)
+
         elif isinstance(gcode, pygcode.gcodes.GCodeFeedRate):
             self._feed_rate = gcode.word.value
         else:
