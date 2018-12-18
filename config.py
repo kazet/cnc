@@ -1,11 +1,11 @@
 from driver import (
-    mill_pin_driver,
+#    mill_pin_driver,
     motor_driver,
 )
 
 import machine
 
-MILL_PIN_DRIVER = mill_pin_driver.RaspberryPiMillPinDriver()
+MILL_PIN_DRIVER = None # mill_pin_driver.RaspberryPiMillPinDriver()
 
 LOCK_PATH = '/tmp/cnc.lock'
 
@@ -22,7 +22,7 @@ MACHINE = machine.Machine(
         step_time=STEP_TIME,
     ),
     y_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Y', is_inverse=False),
+        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Y', is_inverse=True),
         backlash=0.1,
         mm_per_revolution=MM_PER_REVOLUTION,
         steps_per_revolution=STEPS_PER_REVOLUTION,

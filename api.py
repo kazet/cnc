@@ -41,6 +41,20 @@ def simulation_command():
         gcode.interpret(simulation_machine, python_to_gcode.python_to_gcode(input_text))
         moves = simulation_machine.simulated_moves
 
+        return jsonify(moves)
+    except Exception as e:
+        traceback.print_exc()
+        return repr(e), 400
+
+@app.route("/simulate_svg/", methods=["POST"])
+def simulation_svg_command():
+    input_text = request.json['gcode']
+
+    try:
+        simulation_machine = config.create_simulation_machine()
+        gcode.interpret(simulation_machine, python_to_gcode.python_to_gcode(input_text))
+        moves = simulation_machine.simulated_moves
+
         return moves_to_svg.moves_to_svg(
             moves,
             float(request.json['tool_diameter'])

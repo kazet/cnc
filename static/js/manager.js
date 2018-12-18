@@ -39,15 +39,15 @@ $(document).ready(function() {
             $.ajax('/simulate/', {
                 data: JSON.stringify({
                     'gcode': editor.getValue(),
-                    'tool_diameter': $('input.tool-diameter').val(),
                 }),
                 contentType: 'application/json',
                 type: 'POST',
                 success: function(data) {
-                    $('.simulation-image').html('');
-                    img = $('<img />');
-                    img.attr('src', '/' + data);
-                    img.appendTo($('.simulation-image'));
+                    initialize3dVisualization(
+                        document.getElementById('simulation'),
+                        data,
+                        parseFloat($('input.tool-diameter').val())
+                    );
                 },
                 error: function(data) {
                     addToLogs(data.responseText + '\n');

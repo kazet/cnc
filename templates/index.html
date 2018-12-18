@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block extrahead %}
+	<script src="/static/js/three.js/build/three.js"></script>
+	<script src="/static/js/three.js/examples/js/controls/OrbitControls.js"></script>
+	<script src="/static/js/three.js/examples/js/WebGL.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script>
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -59,19 +61,19 @@
                 <h1 class="title">X&Y axes</h1>
                 <div class="columns is-mobile">
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
-                            X - 1, Y - 1
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
+                            X - 1, Y + 1
                         </button>
                     </div>
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
                             <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                            <span>Y - 1</span>
+                            <span>Y + 1</span>
                         </button>
                     </div>
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
-                            X + 1, Y - 1
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
+                            X + 1, Y + 1
                         </button>
                     </div>
                 </div>
@@ -94,19 +96,19 @@
                 </div>
                 <div class="columns is-mobile">
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
-                            X - 1, Y + 1
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
+                            X - 1, Y - 1
                         </button>
                     </div>
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
                             <span class="icon"><i class="fa fa-arrow-down"></i></span>
-                            <span>Y + 1</span>
+                            <span>Y - 1</span>
                         </button>
                     </div>
                     <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
-                            X + 1, Y + 1
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
+                            X + 1, Y - 1
                         </button>
                     </div>
                 </div>
@@ -121,10 +123,7 @@
                 </div>
                 <div id="editor" class="gcode"></div>
             </div>
-            <div class="column simulation-image">
-            </div>
-            <div class="column">
-                <textarea class="textarea logs" readonly rows="15"></textarea>
+            <div class="column is-two-thirds" id="simulation">
             </div>
         </div>
         <div class="columns">
@@ -149,6 +148,7 @@
                     <span class="icon"><i class="fa fa-play"></i></span>
                     <span>Run</span>
                 </button>
+                <textarea class="textarea logs" readonly rows="15"></textarea>
             </div>
             <div class="column">
                 <button class="button is-danger is-fullwidth abort">
