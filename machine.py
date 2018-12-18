@@ -142,7 +142,7 @@ class MachineAxis(BaseMachineAxis):
 
 
 class Machine():
-    DEFAULT_FEED_RATE = 1000
+    DEFAULT_FEED_RATE = 500
     RAPID_MOVE_FEED_RATE = 5000
 
     def __init__(self, x_axis, y_axis, z_axis, simulated=False):
