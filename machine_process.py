@@ -13,6 +13,8 @@ class WorkerProcessMessage():
 
 
 def worker_process(command_queue, log_queue):
+    machine = config.MACHINE
+
     while True:
         message, data = command_queue.get()
 
@@ -22,7 +24,9 @@ def worker_process(command_queue, log_queue):
         elif message == WorkerProcessMessage.GCODE:
             try:
                 start_time = time.time()
-                gcode.interpret(config.MACHINE, data)
+
+                machine.zero_tool_planes_feed()
+                gcode.interpret(machine, data)
                 gcode_execution_time = time.time() - start_time
 
                 log_queue.put(

@@ -146,14 +146,12 @@ class Machine():
     RAPID_MOVE_FEED_RATE = 5000
 
     def __init__(self, x_axis, y_axis, z_axis, simulated=False):
-        self._plane = MachinePlane.XY
-        self._mode = MachineMode.ABSOLUTE
         self._x_axis = x_axis
         self._y_axis = y_axis
         self._z_axis = z_axis
-        self._feed_rate = Machine.DEFAULT_FEED_RATE
         self._simulated = simulated
         self._simulated_moves = [(0, 0, 0)]
+        self.zero_tool_planes_feed()
 
         if simulated:
             self._initialized = True
@@ -180,10 +178,14 @@ class Machine():
         assert self._z_axis.is_simulated()
         return self._simulated_moves
 
-    def zero_tool_positions(self):
+    def zero_tool_planes_feed(self):
         self._x_axis.zero_tool_position()
         self._y_axis.zero_tool_position()
         self._z_axis.zero_tool_position()
+
+        self._plane = MachinePlane.XY
+        self._mode = MachineMode.ABSOLUTE
+        self._feed_rate = Machine.DEFAULT_FEED_RATE
 
     def move_to(self, x, y, z):
         self.move_by(
@@ -202,9 +204,9 @@ class Machine():
         z_steps = self._z_axis.steps_needed_to_move_by(z)
 
         if feed_rate is None:
-            self._coordinated_move_by(x_steps, y_steps, z_steps, feed_rate)
-        else:
             self._coordinated_move_by(x_steps, y_steps, z_steps, self._feed_rate)
+        else:
+            self._coordinated_move_by(x_steps, y_steps, z_steps, feed_rate)
 
     def arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
         RADIUS_EPSILON = 10**(-2)
