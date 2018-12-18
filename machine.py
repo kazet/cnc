@@ -187,14 +187,15 @@ class Machine():
         self._mode = MachineMode.ABSOLUTE
         self._feed_rate = Machine.DEFAULT_FEED_RATE
 
-    def move_to(self, x, y, z):
+    def move_to(self, x, y, z, is_rapid):
         self.move_by(
             x - self._x_axis.tool_position,
             y - self._y_axis.tool_position,
             z - self._z_axis.tool_position,
+            is_rapid=is_rapid,
         )
 
-    def move_by(self, x, y, z, feed_rate=None):
+    def move_by(self, x, y, z, is_rapid, feed_rate=None):
         self._x_axis.compensate_for_backlash(x)
         self._y_axis.compensate_for_backlash(y)
         self._z_axis.compensate_for_backlash(z)
@@ -204,9 +205,9 @@ class Machine():
         z_steps = self._z_axis.steps_needed_to_move_by(z)
 
         if feed_rate is None:
-            self._coordinated_move_by(x_steps, y_steps, z_steps, self._feed_rate)
+            self._coordinated_move_by(x_steps, y_steps, z_steps, self._feed_rate, is_rapid=is_rapid)
         else:
-            self._coordinated_move_by(x_steps, y_steps, z_steps, feed_rate)
+            self._coordinated_move_by(x_steps, y_steps, z_steps, feed_rate, is_rapid=is_rapid)
 
     def arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
         RADIUS_EPSILON = 10**(-2)
@@ -263,10 +264,10 @@ class Machine():
             if self._distance((current_x, current_y, 0), (finish_x, finish_y, 0)) < one_step_distance:
                 break
 
-            self.move_to(start_tool_position_x + current_x, start_tool_position_y + current_y, start_tool_position_z)
+            self.move_to(start_tool_position_x + current_x, start_tool_position_y + current_y, start_tool_position_z, is_rapid=False)
             angle += angle_step
 
-        self.move_to(start_tool_position_x + finish_x, start_tool_position_y + finish_y, start_tool_position_z)
+        self.move_to(start_tool_position_x + finish_x, start_tool_position_y + finish_y, start_tool_position_z, is_rapid=False)
 
     def feed(self, gcode):
         if not self._initialized:
@@ -335,9 +336,9 @@ class Machine():
                 z = 0
 
             if isinstance(gcode, pygcode.gcodes.GCodeRapidMove):
-                self.move_by(x, y, z, Machine.RAPID_MOVE_FEED_RATE)
+                self.move_by(x, y, z, is_rapid=True, feed_rate=Machine.RAPID_MOVE_FEED_RATE)
             elif isinstance(gcode, pygcode.gcodes.GCodeLinearMove):
-                self.move_by(x, y, z)
+                self.move_by(x, y, z, is_rapid=False)
             else:
                 assert(False)
 
@@ -358,7 +359,7 @@ class Machine():
 
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
-    def _coordinated_move_by(self, x_steps, y_steps, z_steps, speed):
+    def _coordinated_move_by(self, x_steps, y_steps, z_steps, speed, is_rapid):
         if x_steps == 0 and y_steps == 0 and z_steps == 0:
             return
 
@@ -370,7 +371,7 @@ class Machine():
             assert self._x_axis.is_simulated()
             assert self._y_axis.is_simulated()
             assert self._z_axis.is_simulated()
-            self._simulated_moves.append((self._x_axis.tool_position, self._y_axis.tool_position, self._z_axis.tool_position))
+            self._simulated_moves.append((self._x_axis.tool_position, self._y_axis.tool_position, self._z_axis.tool_position, is_rapid))
             return
         else:
             assert not self._x_axis.is_simulated()

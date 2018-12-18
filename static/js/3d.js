@@ -59,6 +59,13 @@ function initialize3dVisualization(container, moves, toolWidth) {
 
         // world
         for (var i = 1; i < moves.length; i ++) {
+            /* red color is for rapid moves, blue - for actual milling */
+            if (moves[i][3]) {
+                color = 'red';
+            } else {
+                color = 'blue';
+            }
+
             /*
              * 1/ the axes should be changed: mill Z axis is visualization Y axis and vice versa
              * 2/ the (machine) Y axis should be inverted (positive is UP)
@@ -75,7 +82,7 @@ function initialize3dVisualization(container, moves, toolWidth) {
                         moves[i][2] * scale,
                         - moves[i][1] * scale
                     ),
-                    'red',
+                    color,
                     toolWidth * scale
             ));
         }

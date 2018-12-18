@@ -27,14 +27,14 @@ def code():
 
     # hand with fingers
     result += """
-        G0 X9 Y12
-        G0 X0 Y5
-        G0 X0 Y-5
-        G0 X3 Y3.5
-        G0 X-3 Y-3.5
-        G0 X5 Y0
-        G0 X-5 Y0
-        G0 X-9 Y-12
+        G1 X9 Y12
+        G1 X0 Y5
+        G1 X0 Y-5
+        G1 X3 Y3.5
+        G1 X-3 Y-3.5
+        G1 X5 Y0
+        G1 X-5 Y0
+        G1 X-9 Y-12
     """
 
     # go to farthest bottom point of the middle circle
@@ -44,14 +44,14 @@ def code():
 
     # hand with fingers
     result += """
-        G0 X9 Y-12
-        G0 X0 Y-5
-        G0 X0 Y5
-        G0 X3 Y-3.5
-        G0 X-3 Y3.5
-        G0 X5 Y0
-        G0 X-5 Y0
-        G0 X-9 Y12
+        G1 X9 Y-12
+        G1 X0 Y-5
+        G1 X0 Y5
+        G1 X3 Y-3.5
+        G1 X-3 Y3.5
+        G1 X5 Y0
+        G1 X-5 Y0
+        G1 X-9 Y12
     """
 
     # go to farthest right point of the middle circle
