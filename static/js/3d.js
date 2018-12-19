@@ -8,7 +8,7 @@ function cylinderBetween(from, to, color, width) {
         0, -1, 0, 0,
         0, 0, 0, 1));
 
-    var edgeGeometry = new THREE.CylinderGeometry(width, width, direction.length(), 5, 1);
+    var edgeGeometry = new THREE.CylinderGeometry(width / 2, width / 2, direction.length(), 5, 1);
     var edge = new THREE.Mesh(edgeGeometry, new THREE.MeshBasicMaterial({ color: color }));
     edge.applyMatrix(orientation);
 
