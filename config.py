@@ -1,11 +1,18 @@
-from driver import (
-    mill_pin_driver,
-    motor_driver,
-)
+from driver import motor_driver
+
+try:
+    __import__('RPi._GPIO')
+except RuntimeError:  # no Raspberry PI GPIO modules
+    # Use a dummy driver, that will fail when trying to issue actual commands
+    from driver.mill_pin_driver.dummy import DummyMillPinDriver
+    MILL_PIN_DRIVER = DummyMillPinDriver()
+else:  # we succesfully imported Raspberry PI GPIO modules
+    # Use Raspberry PI GPIO driver if we're on a Raspberry PI
+    from driver.mill_pin_driver.raspberry_pi import RaspberryPiMillPinDriver
+    MILL_PIN_DRIVER = RaspberryPiMillPinDriver()
 
 import machine
 
-MILL_PIN_DRIVER = mill_pin_driver.RaspberryPiMillPinDriver()
 
 LOCK_PATH = '/tmp/cnc.lock'
 
