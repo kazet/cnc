@@ -24,6 +24,8 @@ class TranslatorAndScaler():
             return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeEndProgram):
             return gcode
+        elif isinstance(gcode, pygcode.gcodes.GCodeLineNumber):
+            return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeUseMillimeters):
             return gcode
         elif (
