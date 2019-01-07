@@ -33,19 +33,34 @@ class MachineAxis:
         )
 
     def initialize(self):
-        # Situation ---|???????| - partially unknown tool position
+        # The existence of a backlash means, that the tool can move self._backlash
+        # milimeters to the left or to the right when force is applied.
+        #
+        # Therefore, the starting position may be anywhere from -self._backlash/2 to
+        # +self._backlash/2 from 'zero'.
+        #
+        # We make the following movements to make sure where the tool is:
+        #
+        # Initial situation:       ---|TTTTTTT|     - partially unknown tool position
+        # Move to the left:        |   TTTT|        - the tool may be anywhere from
+        #                                             -self._backlash to 0, because
+        #                                             if it was more to the right, it would
+        #                                             have moved
+        # Move to the right:       ------|T       | - we now know the tool position
+        # Second move to the left: ---|   T   |
+        #
+        # Any later movements will need to take in the account, that when moving the tool,
+        # the first self._backlash/2 of the movement will not do anything. Only later
+        # will the tool start moving.
+
         for unused_i in range(int(self.steps_per_mm(self._backlash / 2.0))):
             self._motor.step_left(self._step_time)
 
-        # Situation |   ????|
         for unused_i in range(int(self.steps_per_mm(self._backlash))):
             self._motor.step_right(self._step_time)
 
-        # Situation ------|?       |
         for unused_i in range(int(self.steps_per_mm(self._backlash / 2.0))):
             self._motor.step_left(self._step_time)
-
-        # Situation ---|   T   | - tool position fully known - TODO update docs
 
     def compensate_for_backlash(self, amount):
         if amount > 0:
