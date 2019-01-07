@@ -30,9 +30,6 @@ class GCodeInterpreter():
 
     def run_gcode_string(self, input_text):
         for input_line in input_text.split('\n'):
-            if input_line.startswith('#'):
-                continue
-
             line = pygcode.Line(input_line)
             for gcode in line.block.gcodes:
                 self.run_gcode_command(gcode)
