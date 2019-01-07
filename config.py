@@ -1,62 +1,43 @@
-from driver import motor_driver
-
 try:
     __import__('RPi._GPIO')
 except RuntimeError:  # no Raspberry PI GPIO modules
     # Use a dummy driver, that will fail when trying to issue actual commands
-    from driver.mill_pin_driver.dummy import DummyMillPinDriver
-    MILL_PIN_DRIVER = DummyMillPinDriver()
+    from motor_driver.dummy import DummyMotorDriver
+    MOTOR_DRIVER_CLASS = DummyMotorDriver
 else:  # we succesfully imported Raspberry PI GPIO modules
     # Use Raspberry PI GPIO driver if we're on a Raspberry PI
-    from driver.mill_pin_driver.raspberry_pi import RaspberryPiMillPinDriver
-    MILL_PIN_DRIVER = RaspberryPiMillPinDriver()
+    from motor_driver.raspberry_pi_gpio import RaspberryPiGPIOMotorDriver
+    MOTOR_DRIVER_CLASS = RaspberryPiGPIOMotorDriver
 
-import machine
-
+import machine.stepper_motor_control_machine
 
 LOCK_PATH = '/tmp/cnc.lock'
 
-MM_PER_REVOLUTION = 3
 STEPS_PER_REVOLUTION = 200.0 * 32.0
 STEP_TIME = 0.000008
 
-MACHINE = machine.Machine(
-    x_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'X', is_inverse=False),
+MACHINE = machine.stepper_motor_control_machine.StepperMotorControlMachine(
+    x_axis=machine.stepper_motor_control_machine.MachineAxis(
+        motor=MOTOR_DRIVER_CLASS('X', is_inverse=False),
         backlash=0.2,
-        mm_per_revolution=MM_PER_REVOLUTION,
+        mm_per_revolution=3,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
-    y_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Y', is_inverse=True),
+    y_axis=machine.stepper_motor_control_machine.MachineAxis(
+        motor=MOTOR_DRIVER_CLASS('Y', is_inverse=True),
         backlash=0.2,
-        mm_per_revolution=MM_PER_REVOLUTION,
+        mm_per_revolution=3,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
-    z_axis=machine.MachineAxis(
-        motor=motor_driver.MotorDriver(MILL_PIN_DRIVER, 'Z', is_inverse=True),
+    z_axis=machine.stepper_motor_control_machine.MachineAxis(
+        motor=MOTOR_DRIVER_CLASS('Z', is_inverse=True),
         backlash=0,
         mm_per_revolution=4,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
+    default_feed_rate=500,
+    rapid_move_feed_rate=5000,
 )
-
-def create_simulation_machine():
-    return machine.Machine(
-        x_axis=machine.SimulatedMachineAxis(
-            mm_per_revolution=MM_PER_REVOLUTION,
-            steps_per_revolution=STEPS_PER_REVOLUTION,
-        ),
-        y_axis=machine.SimulatedMachineAxis(
-            mm_per_revolution=MM_PER_REVOLUTION,
-            steps_per_revolution=STEPS_PER_REVOLUTION,
-        ),
-        z_axis=machine.SimulatedMachineAxis(
-            mm_per_revolution=4,
-            steps_per_revolution=STEPS_PER_REVOLUTION,
-        ),
-        simulated=True,
-    )

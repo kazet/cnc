@@ -2,21 +2,21 @@ import argparse
 
 import pygcode
 
-from machine import MachineMode
+from gcode_interpreter import Mode
 
 class TranslatorAndScaler():
     def __init__(self):
         self._x = 0
         self._y = 0
         self._z = 0
-        self._mode = MachineMode.ABSOLUTE
+        self._mode = Mode.ABSOLUTE
 
     def convert(self, gcode, x, y, z, scale):
         if isinstance(gcode, pygcode.gcodes.GCodeIncrementalDistanceMode):
-            self._mode = MachineMode.INCREMENTAL
+            self._mode = Mode.INCREMENTAL
             return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeAbsoluteDistanceMode):
-            self._mode = MachineMode.ABSOLUTE
+            self._mode = Mode.ABSOLUTE
             return gcode
         elif isinstance(gcode, pygcode.gcodes.GCodeSelectXYPlane):
             return gcode
@@ -33,7 +33,7 @@ class TranslatorAndScaler():
                 isinstance(gcode, pygcode.gcodes.GCodeArcMoveCCW) or
                 isinstance(gcode, pygcode.gcodes.GCodeRapidMove) or
                 isinstance(gcode, pygcode.gcodes.GCodeLinearMove)):
-            if self._mode == MachineMode.ABSOLUTE:
+            if self._mode == Mode.ABSOLUTE:
                 if 'X' in gcode.params:
                     gcode.params['X'].value += x
 
@@ -42,7 +42,7 @@ class TranslatorAndScaler():
 
                 if 'Z' in gcode.params:
                     gcode.params['Z'].value += z
-            elif self._mode == MachineMode.INCREMENTAL:
+            elif self._mode == Mode.INCREMENTAL:
                 pass
             else:
                 assert(False)

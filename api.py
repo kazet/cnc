@@ -11,8 +11,9 @@ from flask import (
     send_from_directory,
 )
 
-import gcode
+import gcode_interpreter
 import config
+import machine.simulated_machine
 import machine_process
 import moves_to_svg
 from utils import python_to_gcode
@@ -33,13 +34,14 @@ def gcode_command():
 
 
 @app.route("/simulate/", methods=["POST"])
-def simulation_command():
+def simulated_command():
     input_text = request.json['gcode']
 
     try:
-        simulation_machine = config.create_simulation_machine()
-        gcode.interpret(simulation_machine, python_to_gcode.python_to_gcode(input_text))
-        moves = simulation_machine.simulated_moves
+        simulated_machine = machine.simulated_machine.SimulatedMachine()
+        interpreter = gcode_interpreter.GCodeInterpreter(simulated_machine)
+        interpreter.run_gcode_string(python_to_gcode.python_to_gcode(input_text))
+        moves = simulated_machine.simulated_moves
 
         return jsonify(moves)
     except Exception as e:
@@ -47,13 +49,14 @@ def simulation_command():
         return repr(e), 400
 
 @app.route("/simulate_svg/", methods=["POST"])
-def simulation_svg_command():
+def simulated_svg_command():
     input_text = request.json['gcode']
 
     try:
-        simulation_machine = config.create_simulation_machine()
-        gcode.interpret(simulation_machine, python_to_gcode.python_to_gcode(input_text))
-        moves = simulation_machine.simulated_moves
+        simulated_machine = machine.simulated_machine.SimulatedMachine()
+        interpreter = gcode_interpreter.GCodeInterpreter(simulated_machine)
+        interpreter.run_gcode_string(python_to_gcode.python_to_gcode(input_text))
+        moves = simulated_machine.simulated_moves
 
         return moves_to_svg.moves_to_svg(
             moves,

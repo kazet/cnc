@@ -4,7 +4,7 @@ import time
 import traceback
 
 import config
-import gcode
+import gcode_interpreter
 
 
 class WorkerProcessMessage():
@@ -18,26 +18,25 @@ def worker_process(command_queue, log_queue):
     while True:
         message, data = command_queue.get()
 
-        if message == WorkerProcessMessage.INITIALIZE:
-            config.MACHINE.initialize()
-            log_queue.put("Machine initialized successfully")
-        elif message == WorkerProcessMessage.GCODE:
-            try:
+        try:
+            if message == WorkerProcessMessage.INITIALIZE:
+                machine.initialize()
+                log_queue.put("Machine initialized successfully")
+            elif message == WorkerProcessMessage.GCODE:
                 start_time = time.time()
 
-                machine.zero_tool_planes_feed()
-                gcode.interpret(machine, data)
+                gcode_interpreter.GCodeInterpreter(machine).run_gcode_string(data)
                 gcode_execution_time = time.time() - start_time
 
                 log_queue.put(
                     "gcode interpreted successfully, took %.02f seconds" %
                     gcode_execution_time,
                 )
-            except Exception as e:
-                traceback.print_exc()
-                log_queue.put("Unable to execute gcode: %s" % repr(e))
-        else:
-            assert(False)
+            else:
+                assert(False)
+        except Exception as e:
+            traceback.print_exc()
+            log_queue.put("Unable to execute gcode: %s" % repr(e))
 
 
 def spawn_worker_process():
