@@ -4,6 +4,7 @@ import pygcode
 import pygcode.gcodes
 
 from tool_position import ThreeAxesToolPositionContainer
+from utils.math_utils import euclidean_distance
 
 
 class Mode():
@@ -126,12 +127,6 @@ class GCodeInterpreter():
         else:
             raise InvalidGCodeException("Unknown GCode: %s" % gcode.__class__)
 
-    def _distance(self, point1, point2):
-        x1, y1, z1 = point1
-        x2, y2, z2 = point2
-
-        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
-
     def _arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
         RADIUS_EPSILON = 10**(-2)
         NUM_ANGULAR_STEPS = 60
@@ -159,8 +154,8 @@ class GCodeInterpreter():
         if finish_z != 0:
             raise NotImplementedError("Helical moves are not supported")
 
-        radius = self._distance((0, 0, 0), (center_x, center_y, 0))
-        radius2 = self._distance((finish_x, finish_y, 0), (center_x, center_y, 0))
+        radius = euclidean_distance((0, 0, 0), (center_x, center_y, 0))
+        radius2 = euclidean_distance((finish_x, finish_y, 0), (center_x, center_y, 0))
 
         if abs(radius - radius2) > RADIUS_EPSILON:
             raise Exception("Radia mismatch: %0.6f vs %.06f" % (
@@ -172,7 +167,7 @@ class GCodeInterpreter():
             raise Exception("Null radius")
 
         angle_step = angular_direction * (2 * math.pi) / NUM_ANGULAR_STEPS
-        one_step_distance = self._distance(
+        one_step_distance = euclidean_distance(
             (0, radius, 0),
             (radius * math.sin(angle_step), radius * math.cos(angle_step), 0))
 
@@ -183,7 +178,7 @@ class GCodeInterpreter():
             current_x = center_x + radius * math.cos(angle)
             current_y = center_y + radius * math.sin(angle)
 
-            if self._distance((current_x, current_y, 0), (finish_x, finish_y, 0)) < one_step_distance:
+            if euclidean_distance((current_x, current_y, 0), (finish_x, finish_y, 0)) < one_step_distance:
                 break
 
             self._move_to_absolute(
