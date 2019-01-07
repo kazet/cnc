@@ -13,7 +13,7 @@ To run the web interface, execute the following commands:
 ```bash
 virtualenv -p /usr/bin/python3 venv
 . venv/bin/activate
-pip install -r requirements
+pip install -r requirements.txt
 ./launch.sh
 ```
 
