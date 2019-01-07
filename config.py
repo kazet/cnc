@@ -11,8 +11,6 @@ else:  # we succesfully imported Raspberry PI GPIO modules
 
 import machine.stepper_motor_control_machine
 
-LOCK_PATH = '/tmp/cnc.lock'
-
 STEPS_PER_REVOLUTION = 200.0 * 32.0
 STEP_TIME = 0.000008
 
