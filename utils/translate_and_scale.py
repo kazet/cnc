@@ -1,8 +1,7 @@
-import argparse
-
 import pygcode
 
 from gcode_interpreter import Mode
+
 
 class TranslatorAndScaler():
     def __init__(self):

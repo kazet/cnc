@@ -25,4 +25,3 @@ class DummyMotorDriver:
 
     def _raise(self):
         raise NotImplementedError("No actual milling machine connected")
-

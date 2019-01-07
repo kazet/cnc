@@ -3,7 +3,10 @@ import sys
 from io import StringIO
 import contextlib
 
-from utils.translate_and_scale import translate_and_scale
+
+# We want the following utilities to be visible to the executed code
+# so that it is able to call them
+from utils.translate_and_scale import translate_and_scale  # noqa
 
 
 @contextlib.contextmanager
@@ -14,7 +17,7 @@ def stdoutIO(stdout=None):
     sys.stdout = stdout
     yield stdout
     sys.stdout = old
-   
+
 
 def load_example(name):
     path = os.path.join(
@@ -33,4 +36,3 @@ def python_to_gcode(code):
     with stdoutIO() as s:
         exec(code)
         return s.getvalue()
-

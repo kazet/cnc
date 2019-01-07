@@ -8,4 +8,3 @@ def random_token(length=40):
     for _ in range(length):
         result += random.choice(string.ascii_letters + string.digits)
     return result
-

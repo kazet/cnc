@@ -1,5 +1,4 @@
 import math
-import time
 
 import pygcode
 import pygcode.gcodes
@@ -67,7 +66,6 @@ class GCodeInterpreter():
                 gcode.get_param_dict().get('Z', 0),
                 self._mode,
             )
-
 
             if isinstance(gcode, pygcode.gcodes.GCodeArcMoveCW):
                 angular_direction = -1
@@ -164,9 +162,6 @@ class GCodeInterpreter():
         if finish_z != 0:
             raise NotImplementedError("Helical moves are not supported")
 
-        angle1 = math.atan2(0 - center_y, 0 - center_x)
-        angle2 = math.atan2(finish_y - center_y, finish_x - center_x)
-
         radius = self._distance((0, 0, 0), (center_x, center_y, 0))
         radius2 = self._distance((finish_x, finish_y, 0), (center_x, center_y, 0))
 
@@ -183,7 +178,9 @@ class GCodeInterpreter():
         one_step_distance = self._distance(
             (0, radius, 0),
             (radius * math.sin(angle_step), radius * math.cos(angle_step), 0))
-        angle = angle1
+
+        start_angle = math.atan2(0 - center_y, 0 - center_x)
+        angle = start_angle
 
         while True:
             current_x = center_x + radius * math.cos(angle)
@@ -192,10 +189,16 @@ class GCodeInterpreter():
             if self._distance((current_x, current_y, 0), (finish_x, finish_y, 0)) < one_step_distance:
                 break
 
-            self._move_to_absolute(start_tool_position_x + current_x, start_tool_position_y + current_y, start_tool_position_z)
+            self._move_to_absolute(
+                start_tool_position_x + current_x,
+                start_tool_position_y + current_y,
+                start_tool_position_z)
             angle += angle_step
 
-        self._move_to_absolute(start_tool_position_x + finish_x, start_tool_position_y + finish_y, start_tool_position_z)
+        self._move_to_absolute(
+            start_tool_position_x + finish_x,
+            start_tool_position_y + finish_y,
+            start_tool_position_z)
 
     def _move_to_absolute(self, x, y, z):
         self._move_by_and_update_tool_position(
@@ -225,7 +228,7 @@ class GCodeInterpreter():
             return position
         else:
             assert(False)
-        
+
     def _zero_tool_planes_feed(self):
         """
         Resets the GCodeInterpreter configuration. Thet means, that:

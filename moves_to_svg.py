@@ -3,6 +3,7 @@ import svgwrite
 
 from utils.random import random_token
 
+
 def line_id_to_stroke(line_id):
     if line_id % 10 == 0:
         return svgwrite.rgb(50, 0, 0, '%')

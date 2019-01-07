@@ -6,7 +6,7 @@ from steps_sequence import create_xyz_steps_sequence
 class MachineUseException(Exception):
     def __init__(self, message):
         self.message = message
-        
+
 
 class MachineAxis:
     def __init__(self, motor, backlash, mm_per_revolution, steps_per_revolution, step_time):
@@ -139,15 +139,14 @@ class StepperMotorControlMachine:
         )
         step_time = total_time / len(steps_sequence)
 
-        current_time = 0
         for event_time, axis in steps_sequence:
             motor = None
             if axis == 'X':
-                 motor = self._x_axis.motor
+                motor = self._x_axis.motor
             elif axis == 'Y':
-                 motor = self._y_axis.motor
+                motor = self._y_axis.motor
             elif axis == 'Z':
-                 motor = self._z_axis.motor
+                motor = self._z_axis.motor
             else:
                 assert(False)
 

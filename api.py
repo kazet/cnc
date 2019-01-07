@@ -1,5 +1,4 @@
 import os
-import sys
 import traceback
 
 from flask import (
@@ -12,10 +11,10 @@ from flask import (
 )
 
 import gcode_interpreter
-import config
 import machine.simulated_machine
 import machine_process
 import moves_to_svg
+
 from utils import python_to_gcode
 
 app = Flask(__name__, static_url_path='')
@@ -47,6 +46,7 @@ def simulated_command():
     except Exception as e:
         traceback.print_exc()
         return repr(e), 400
+
 
 @app.route("/simulate_svg/", methods=["POST"])
 def simulated_svg_command():
