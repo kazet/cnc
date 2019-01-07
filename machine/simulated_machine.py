@@ -38,5 +38,5 @@ class SimulatedMachine:
         return self._default_feed_rate
 
     @property
-    def get_rapid_move_feed_rate(self):
+    def rapid_move_feed_rate(self):
         return self._rapid_move_feed_rate
