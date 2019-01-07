@@ -7,30 +7,28 @@ This tool uses Raspberry PI GPIO pins to interface with stepper motor drivers.
 The GPIO pin numbers for `DIR` and `PUL` stepper motor driver inputs for each
 axis are described in `config.py`.
 
+## Installation prerequisites
+To run this tool, you need to install `python3` and `python3-virtualenv`.
+
 ## How to run
 To run the web interface, execute the following commands:
 
 ```bash
-virtualenv -p /usr/bin/python3 venv
-. venv/bin/activate
-pip install -r requirements.txt
 ./launch.sh
 ```
 
 The interface will listen on http://0.0.0.0:5000/.
 
 ## How to check code quality (via flake8)
-To check the code quality, execute the following commands:
+To check the code quality, execute the following command:
 
 ```bash
-. venv/bin/activate
-flake8 .
+./run_flake8.sh
 ```
 
 ## How to run the tests
-To run the tests, execute the following commands:
+To run the tests, execute the following command:
 
 ```bash
-. venv/bin/activate
-PYTHONPATH=.:src python -m unittest discover
+./run_tests.sh
 ```
