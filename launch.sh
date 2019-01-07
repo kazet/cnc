@@ -3,5 +3,5 @@
 cd $(dirname "$0")
 
 . venv/bin/activate
-export FLASK_APP=api.py
+export FLASK_APP=server.py
 python -m flask run -h 0.0.0.0
