@@ -3,3 +3,4 @@ Flask==0.12.2
 pygcode==0.2.1
 RPi.GPIO==0.6.3
 svgwrite==1.1.12
+unittest2==1.1.0
