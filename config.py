@@ -18,21 +18,21 @@ STEP_TIME = 0.000008
 
 MACHINE = machine.stepper_motor_control_machine.StepperMotorControlMachine(
     x_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS('X', is_inverse=False),
+        motor=MOTOR_DRIVER_CLASS({'DIR': 35, 'PUL': 37}, is_inverse=False),
         backlash=0.2,
         mm_per_revolution=3,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
     y_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS('Y', is_inverse=True),
+        motor=MOTOR_DRIVER_CLASS({'DIR': 33, 'PUL': 31}, is_inverse=True),
         backlash=0.2,
         mm_per_revolution=3,
         steps_per_revolution=STEPS_PER_REVOLUTION,
         step_time=STEP_TIME,
     ),
     z_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS('Z', is_inverse=True),
+        motor=MOTOR_DRIVER_CLASS({'DIR': 36, 'PUL': 38}, is_inverse=True),
         backlash=0,
         mm_per_revolution=4,
         steps_per_revolution=STEPS_PER_REVOLUTION,
