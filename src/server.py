@@ -21,19 +21,19 @@ app = Flask(__name__, static_url_path='')
 
 
 @app.route('/static/<path:path>')
-def static_files(path):
+def endpoint_serve_static_files(path):
     return send_from_directory('static', path)
 
 
 @app.route("/gcode/", methods=["POST"])
-def gcode_command():
+def endpoint_run_gcode_command():
     input_text = request.json['gcode']
     machine_process.send_message_gcode(python_to_gcode.python_to_gcode(input_text))
     return 'OK'
 
 
 @app.route("/simulate/", methods=["POST"])
-def simulated_command():
+def endpoint_simulate_moves_json():
     input_text = request.json['gcode']
 
     try:
@@ -49,7 +49,7 @@ def simulated_command():
 
 
 @app.route("/simulate_svg/", methods=["POST"])
-def simulated_svg_command():
+def endpoint_simulate_moves_svg():
     input_text = request.json['gcode']
 
     try:
@@ -68,24 +68,24 @@ def simulated_svg_command():
 
 
 @app.route("/initialize/", methods=["POST"])
-def initialize_command():
+def endpoint_initialize():
     machine_process.send_message_initialize()
     return 'OK'
 
 
 @app.route("/abort/", methods=["POST"])
-def abort_command():
+def endpoint_abort():
     machine_process.kill()
     return 'OK'
 
 
 @app.route("/get_logs/", methods=["POST"])
-def get_logs():
+def endpoint_get_logs():
     return machine_process.get_logs()
 
 
 @app.route("/")
-def index():
+def endpoint_index():
     def load(name):
         with open(os.path.join(os.path.dirname(__file__), 'examples', name)) as f:
             return f.read()
