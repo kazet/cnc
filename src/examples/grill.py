@@ -26,7 +26,6 @@ def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
         for row in range(-half_num_rows_columns, half_num_rows_columns + 1):
             hole_center_x = column * hole_spacing
             hole_center_y = row * hole_spacing
-            __import__('sys').stderr.write('%d %d %d %d %d\n' % (column, row, hole_center_x, hole_center_y, radius))
 
             if math.sqrt(hole_center_x ** 2 + hole_center_y ** 2) > radius:
                 continue
