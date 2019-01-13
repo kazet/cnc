@@ -87,11 +87,11 @@ def endpoint_get_logs():
 @app.route("/")
 def endpoint_index():
     def load(name):
-        with open(os.path.join(os.path.dirname(__file__), 'examples', name)) as f:
+        with open(os.path.join(os.path.dirname(__file__), 'gcode_modules', name)) as f:
             return f.read()
 
-    return render_template('index.html', examples=[
+    return render_template('index.html', modules=[
         (name, load(name))
-        for name in os.listdir(os.path.join(os.path.dirname(__file__), 'examples'))
+        for name in sorted(os.listdir(os.path.join(os.path.dirname(__file__), 'gcode_modules')))
         if name != '.' and name != '..' and name != '__init__.py' and name != '__pycache__'
     ])

@@ -1,3 +1,7 @@
+.has-large-top-margin {
+    margin-top: 18px !important;
+}
+
 .has-small-bottom-margin {
     margin-bottom: 9px !important;
 }
@@ -6,4 +10,9 @@
     width: 100%;
     height: 400px;
     font-size: 16px;
+}
+
+#simulation {
+    width: 100%;
+    height: 400px;
 }

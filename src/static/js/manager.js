@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#page-manager').each(function() {
+    $('#manager-page').each(function() {
         function addToLogs(data) {
             $('textarea.logs').val($('textarea.logs').val() + data);
             $('textarea.logs').scrollTop($('textarea.logs')[0].scrollHeight);
@@ -81,10 +81,10 @@ $(document).ready(function() {
             });
         }, 500);
 
-        $('.example').hide();
-        $(this).find('.example-list a').bind('click', function() {
-            $('.example').hide();
-            $('.example[data-id=' + $(this).data('example-id') + ']').show();
+        $('.module').hide();
+        $(this).find('.module-list a').bind('click', function() {
+            $('.module').hide();
+            $('.module[data-id=' + $(this).data('module-id') + ']').show();
 
             return false;
         });

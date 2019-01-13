@@ -9,186 +9,176 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container" id="page-manager">
-        <div class="columns">
-            <div class="column is-one-quarter">
-                <h1 class="title">Management</h1>
-                <div class="box">
-                    <h2 class="subtitle has-small-bottom-margin">Initialization</h2>
-                    <div class="field">
+    <div id="manager-page">
+        <div class="container">
+            <div class="box has-large-top-margin">
+                <div class="columns">
+                    <div class="column is-one-quarter">
+                        <h2 class="subtitle">Machine initialization</h2>
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth initialize-trigger">
+                                    <span class="icon"><i class="fa fa-sync"></i></span>
+                                    <span>Initialize machine</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <h2 class="subtitle has-small-bottom-margin">Move scale</h2>
                         <div class="control">
-                            <button class="button is-primary is-fullwidth initialize-trigger">
-                                <span class="icon"><i class="fa fa-sync"></i></span>
-                                <span>Initialize machine</span>
-                            </button>
+                            <label class="radio">
+                                <input type="radio" name="move-scale" value="0.02">
+                                0.02mm
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="move-scale" value="0.1">
+                                0.1mm
+                            </label>
+                        </div>
+                        <div class="control">
+                            <label class="radio">
+                                <input type="radio" name="move-scale" value="1" checked>
+                                1mm
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="move-scale" value="10">
+                                10mm
+                            </label>
                         </div>
                     </div>
 
-                    <h2 class="subtitle has-small-bottom-margin">Move scale</h2>
-                    <div class="control">
-                        <label class="radio">
-                            <input type="radio" name="move-scale" value="0.02">
-                            0.02mm
-                        </label>
-                        <label class="radio">
-                            <input type="radio" name="move-scale" value="0.1">
-                            0.1mm
-                        </label>
-                    </div>
-                    <div class="control">
-                        <label class="radio">
-                            <input type="radio" name="move-scale" value="1" checked>
-                            1mm
-                        </label>
-                        <label class="radio">
-                            <input type="radio" name="move-scale" value="10">
-                            10mm
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-quarter">
-                <h1 class="title">Z axis</h1>
-                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="1">
-                    <span class="icon"><i class="fa fa-arrow-up"></i></span><span> (Z +1)</span>
-                </button>
+                    <div class="column is-one-quarter">
+                        <h2 class="subtitle">Manual movement: Z axis</h2>
 
-                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="-1">
-                    <span class="icon"><i class="fa fa-arrow-down"></i></span><span> (Z -1)</span>
-                </button>
-            </div>
-            <div class="column">
-                <h1 class="title">X&Y axes</h1>
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
-                            X - 1, Y + 1
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="1">
+                            <span class="icon"><i class="fa fa-arrow-up"></i></span><span> (Z +1)</span>
                         </button>
-                    </div>
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
-                            <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                            <span>Y + 1</span>
-                        </button>
-                    </div>
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
-                            X + 1, Y + 1
-                        </button>
-                    </div>
-                </div>
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="0" data-direction-z="0">
-                            <span class="icon"><i class="fa fa-arrow-left"></i></span>
-                            <span>X - 1</span>
-                        </button>
-                    </div>
-                    <div class="column">
-                        &nbsp;
-                    </div>
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="0" data-direction-z="0">
-                            <span class="icon"><i class="fa fa-arrow-right"></i></span>
-                            <span>X + 1</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
-                            X - 1, Y - 1
-                        </button>
-                    </div>
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
-                            <span class="icon"><i class="fa fa-arrow-down"></i></span>
-                            <span>Y - 1</span>
-                        </button>
-                    </div>
-                    <div class="column">
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
-                            X + 1, Y - 1
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <h1 class="title">Python outputting code</h1>
-        <div class="columns">
-            <div class="column">
-                <div class="box">
-                    <b>from examples.snowman import code as snowman</b><br/>
-                    <b>print(translate_and_scale(snowman(), scale=0.1))</b>
-                </div>
-                <div id="editor" class="gcode"></div>
-            </div>
-            <div class="column is-two-thirds" id="simulation">
-            </div>
-        </div>
-        <div class="columns">
-            <div class="column">
-                <div class="box">
-                    <h2 class="subtitle has-small-bottom-margin">Simulation</h2>
 
-                    <div class="field">
-                        <label class="label">Tool width</label>
+                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="-1">
+                            <span class="icon"><i class="fa fa-arrow-down"></i></span><span> (Z -1)</span>
+                        </button>
+                    </div>
+                    <div class="column">
+                        <h2 class="subtitle">Manual movement: X&Y axes</h2>
+                        <div class="columns is-mobile">
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
+                                    X - 1, Y + 1
+                                </button>
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
+                                    <span class="icon"><i class="fa fa-arrow-up"></i></span>
+                                    <span>Y + 1</span>
+                                </button>
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
+                                    X + 1, Y + 1
+                                </button>
+                            </div>
+                        </div>
+                        <div class="columns is-mobile">
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="0" data-direction-z="0">
+                                    <span class="icon"><i class="fa fa-arrow-left"></i></span>
+                                    <span>X - 1</span>
+                                </button>
+                            </div>
+                            <div class="column">
+                                &nbsp;
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="0" data-direction-z="0">
+                                    <span class="icon"><i class="fa fa-arrow-right"></i></span>
+                                    <span>X + 1</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="columns is-mobile">
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
+                                    X - 1, Y - 1
+                                </button>
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
+                                    <span class="icon"><i class="fa fa-arrow-down"></i></span>
+                                    <span>Y - 1</span>
+                                </button>
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
+                                    X + 1, Y - 1
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <div id="editor" class="gcode">{% include "example.py" %}</div>
+                </div>
+                <div class="column is-two-thirds">
+                    <div id="simulation"></div>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <div class="field has-addons">
+                        <p class="control">
+                            <a class="button is-static">
+                                Tool width [mm]
+                            </a>
+                        </p>
                         <div class="control">
                             <input class="input tool-diameter" type="text" value="0.3">
                         </div>
+                        <div class="control">
+                            <button class="button is-primary is-fullwidth simulate">
+                                <span class="icon"><i class="fa fa-image"></i></span>
+                                <span>Simulate</span>
+                            </button>
+                        </div>
                     </div>
-                    <button class="button is-primary is-fullwidth simulate">
-                        <span class="icon"><i class="fa fa-image"></i></span>
-                        <span>Simulate</span>
+                </div>
+                <div class="column">
+                    <button class="button is-primary is-fullwidth run-gcode">
+                        <span class="icon"><i class="fa fa-play"></i></span>
+                        <span>Run</span>
                     </button>
                 </div>
-            </div>
-            <div class="column">
-                <button class="button is-primary is-fullwidth run-gcode">
-                    <span class="icon"><i class="fa fa-play"></i></span>
-                    <span>Run</span>
-                </button>
-                <textarea class="textarea logs" readonly rows="15"></textarea>
-            </div>
-            <div class="column">
-                <button class="button is-danger is-fullwidth abort">
-                    <span class="icon"><i class="fa fa-stop"></i></span>
-                    <span>Abort</span>
-                </button>
-                <p class="help">Caution: aborting is <b>not</b> a graceful shutdown. May leave the machine in an inconsistent state, eg. PUL signal on motors enabled.</p>
-            </div>
-        </div>
-        <h1 class="title">G-code examples/help</h1>
-        <div class="columns">
-            <div class="column is-three-quarters">
-                <div class="example-list tabs">
-                    <ul>
-                        {% for name, content in examples %}
-                            <li><a href="#" data-example-id="{{ loop.index }}">{{ name }}</a></li>
-                        {% endfor %}
-                    </ul>
+                <div class="column">
+                    <button class="button is-danger is-fullwidth abort">
+                        <span class="icon"><i class="fa fa-stop"></i></span>
+                        <span>Abort</span>
+                    </button>
+                    <p class="help">Caution: aborting is <b>not</b> a graceful shutdown. May leave the machine in an inconsistent state, eg. PUL signal on motors enabled.</p>
                 </div>
-
-                {% for name, content in examples %}
-                    <div class="box example" data-id="{{ loop.index }}">
-                        <h2 class="subtitle has-small-bottom-margin">Example {{ loop.index }}: {{ name }}</h2>
-                        <pre>{{ content }}</pre>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <h2 class="subtitle">Machine logs</h2>
+                    <textarea class="textarea logs" readonly rows="15"></textarea>
+                </div>
+                <div class="column is-two-thirds">
+                    <h2 class="subtitle">Available modules</h2>
+                    <div class="module-list tabs">
+                        <ul>
+                            {% for name, content in modules %}
+                                <li><a href="#" data-module-id="{{ loop.index }}">{{ name }}</a></li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                {% endfor %}
-            </div>
-            <div class="column">
-                <h2 class="subtitle has-small-bottom-margin">Help</h2>
-                <div class="box">
-                    <b>G90</b> absolute mode
-                </div>
-                <div class="box">
-                    <b>G91</b> relative mode
-                </div>
-                <div class="box">
-                    <b>F60</b>: 60mm/min<br/>
-                    <b>F1000</b>: 140mm/min<br/>
-                    <b>F5000</b>: 160mm/min<br/>
-                    <b>F10000: do not use - loses steps</b>
+
+                    {% for name, content in modules %}
+                        <div class="box module" data-id="{{ loop.index }}">
+                            <h2 class="subtitle has-small-bottom-margin">Module {{ loop.index }}: {{ name }}</h2>
+                            <pre>{{ content }}</pre>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
