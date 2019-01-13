@@ -4,6 +4,8 @@ you may prefer to use different, production-ready milling machine software.
 
 ![Build status](https://travis-ci.com/kazetkazet/cnc.svg?branch=master)
 
+![Screenshot](screenshot.png)
+
 ## How to connect
 This tool uses Raspberry PI GPIO pins to interface with stepper motor drivers.
 The GPIO pin numbers for `DIR` and `PUL` stepper motor driver inputs for each
