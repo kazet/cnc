@@ -4,6 +4,7 @@ you may prefer to use different, production-ready milling machine software.
 
 ![Build status](https://travis-ci.com/kazetkazet/cnc.svg?branch=master)
 
+## App screenshot
 ![Screenshot](screenshot.png)
 
 ## How to connect
