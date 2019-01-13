@@ -1,9 +1,10 @@
 import math
 
+
 def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
     """
     This example drills a filled, circular pattern consisting of small holes.
-    
+
     Arguments:
         radius: circle radius
         hole_spacing: the distance between hole centers
@@ -29,15 +30,15 @@ def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
 
             if math.sqrt(hole_center_x ** 2 + hole_center_y ** 2) > radius:
                 continue
-        
+
             result += "G0 X%d Y0\n" % (
                 hole_center_x - last_hole_center_x,
             )
-        
+
             result += "G0 X0 Y%d\n" % (
                 hole_center_y - last_hole_center_y,
             )
-        
+
             result += (
                 "G0 X-%f\n" % (hole_radius) +
                 "G1 Z-%f\n" % safe_height +
@@ -46,7 +47,7 @@ def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
                 "G1 Z%f\n" % safe_height +
                 "G0 X%f\n" % (hole_radius)
             )
-        
+
             last_hole_center_x = hole_center_x
             last_hole_center_y = hole_center_y
 
