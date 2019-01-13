@@ -1,5 +1,5 @@
-# A toy milling machine driver with a web interface
-Disclaimer: this tool is not stable. If you want to get actual stuff done,
+# An experimental milling machine driver with a web interface
+Disclaimer: this tool may not be stable. If you want to get actual stuff done,
 you may prefer to use different, production-ready milling machine software.
 
 ## How to connect
