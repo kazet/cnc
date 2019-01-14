@@ -5,6 +5,35 @@ $(document).ready(function() {
             $('textarea.logs').scrollTop($('textarea.logs')[0].scrollHeight);
         }
 
+        function ajaxErrorLoggingCallWrapper(url, parameters) {
+            var oldSuccessCallback = parameters.success;
+            var oldErrorCallback = parameters.success;
+
+            parameters.success = function(data) {
+                if (data.status == "ERROR") {
+                    alert(data.message);
+                    addToLogs(data.message + '\n');
+                } else {
+                    if (oldSuccessCallback !== undefined) {
+                        oldSuccessCallback(data);
+                    }
+                }
+            }
+
+            parameters.error = function(xhr) {
+                if (xhr.responseText) {
+                    addToLogs(xhr.responseText + '\n');
+                }
+                /* else: nothing interesting to display */
+
+                if (oldErrorCallback !== undefined) {
+                    oldErrorCallback(data);
+                }
+            }
+
+            $.ajax(url, parameters);
+        }
+
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/python");
@@ -12,7 +41,7 @@ $(document).ready(function() {
         $(this).find('.initialize-trigger').bind('click', function() {
             var button = $(this);
 
-            $.ajax('/initialize/', {
+            ajaxErrorLoggingCallWrapper('/api/initialize/', {
                 type: 'POST',
                 success: function(data) {
                     button.attr('disabled', true);
@@ -26,40 +55,38 @@ $(document).ready(function() {
             var x = parseFloat($(this).data('direction-x')) * scale;
             var y = parseFloat($(this).data('direction-y')) * scale;
             var z = parseFloat($(this).data('direction-z')) * scale;
-            $.ajax('/gcode/', {
+
+            ajaxErrorLoggingCallWrapper('/api/pygcode/', {
                 data: JSON.stringify({
-                    'gcode': 'emit("""G91 G00 X' + x + ' Y' + y + ' Z' + z + '""")'
+                    'pygcode': 'emit("""G91 G00 X' + x + ' Y' + y + ' Z' + z + '""")'
                 }),
                 contentType: 'application/json',
-                type: 'POST',
+                type: 'POST'
             });
         });
 
         $(this).find('.simulate').bind('click', function() {
-            $.ajax('/simulate/', {
+            ajaxErrorLoggingCallWrapper('/api/simulate/json/', {
                 data: JSON.stringify({
-                    'gcode': editor.getValue(),
+                    'pygcode': editor.getValue(),
                 }),
                 contentType: 'application/json',
                 type: 'POST',
                 success: function(data) {
                     initialize3dVisualization(
                         document.getElementById('simulation'),
-                        data,
+                        data.moves,
                         parseFloat($('input.tool-diameter').val())
                     );
                 },
-                error: function(data) {
-                    addToLogs(data.responseText + '\n');
-                }
             });
         });
 
 
-        $(this).find('.run-gcode').bind('click', function() {
-            $.ajax('/gcode/', {
+        $(this).find('.run-pygcode').bind('click', function() {
+            ajaxErrorLoggingCallWrapper('/api/pygcode/', {
                 data: JSON.stringify({
-                    'gcode': editor.getValue(),
+                    'pygcode': editor.getValue(),
                 }),
                 contentType: 'application/json',
                 type: 'POST',
@@ -67,21 +94,21 @@ $(document).ready(function() {
         });
 
         $(this).find('.abort').bind('click', function() {
-            $.ajax('/abort/', {
+            ajaxErrorLoggingCallWrapper('/api/abort/', {
                 type: 'POST'
             });
         });
 
         setInterval(function() {
-            $.ajax('/get_logs/', {
+            ajaxErrorLoggingCallWrapper('/api/get_logs/', {
                 type: 'POST',
                 success: function(data) {
-                    for (var i=0; i<data.length; i++) {
-                        if (data[i].level == 'ERROR') {
-                            alert(data[i].message);
+                    for (var i=0; i<data.logs.length; i++) {
+                        if (data.logs[i].level == 'ERROR') {
+                            alert(data.logs[i].message);
                         }
 
-                        addToLogs(data[i].message + '\n');
+                        addToLogs(data.logs[i].message + '\n');
                     }
                 }
             });

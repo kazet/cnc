@@ -21,21 +21,41 @@ app = Flask(__name__, static_url_path='')
 machine_worker_process = machine_process.WorkerProcess.create_and_start()
 
 
+@app.route("/")
+def endpoint_index():
+    def load(name):
+        with open(os.path.join(os.path.dirname(__file__), 'pygcode_modules', name)) as f:
+            return f.read()
+
+    return render_template('index.html', modules=[
+        (name, load(name))
+        for name in sorted(os.listdir(os.path.join(os.path.dirname(__file__), 'pygcode_modules')))
+        if name != '.' and name != '..' and name != '__init__.py' and name != '__pycache__'
+    ])
+
+
 @app.route('/static/<path:path>')
 def endpoint_serve_static_files(path):
     return send_from_directory('static', path)
 
 
-@app.route("/gcode/", methods=["POST"])
-def endpoint_run_gcode_command():
-    input_text = request.json['gcode']
-    machine_worker_process.send_message_gcode(python_to_gcode.python_to_gcode(input_text))
-    return 'OK'
+@app.route("/api/pygcode/", methods=["POST"])
+def endpoint_api_run_pygcode_command():
+    input_text = request.json['pygcode']
+
+    try:
+        machine_worker_process.send_message_gcode(python_to_gcode.python_to_gcode(input_text))
+        return jsonify({
+            'status': "OK",
+        })
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': "ERROR", 'message': repr(e)})
 
 
-@app.route("/simulate/", methods=["POST"])
-def endpoint_simulate_moves_json():
-    input_text = request.json['gcode']
+@app.route("/api/simulate/json/", methods=["POST"])
+def endpoint_api_simulate_moves_json():
+    input_text = request.json['pygcode']
 
     try:
         simulated_machine = machine.simulated_machine.SimulatedMachine()
@@ -43,15 +63,18 @@ def endpoint_simulate_moves_json():
         interpreter.run_gcode_string(python_to_gcode.python_to_gcode(input_text))
         moves = simulated_machine.simulated_moves
 
-        return jsonify(moves)
+        return jsonify({
+            'status': "OK",
+            'moves': moves,
+        })
     except Exception as e:
         traceback.print_exc()
-        return repr(e), 400
+        return jsonify({'status': "ERROR", 'message': repr(e)})
 
 
-@app.route("/simulate_svg/", methods=["POST"])
-def endpoint_simulate_moves_svg():
-    input_text = request.json['gcode']
+@app.route("/api/simulate/svg/", methods=["POST"])
+def endpoint_api_simulate_moves_svg():
+    input_text = request.json['pygcode']
 
     try:
         simulated_machine = machine.simulated_machine.SimulatedMachine()
@@ -59,40 +82,33 @@ def endpoint_simulate_moves_svg():
         interpreter.run_gcode_string(python_to_gcode.python_to_gcode(input_text))
         moves = simulated_machine.simulated_moves
 
-        return moves_to_svg.moves_to_svg(
-            moves,
-            float(request.json['tool_diameter'])
-        )
+        return jsonify({
+            'status': "OK",
+            'result': moves_to_svg.moves_to_svg(
+                moves,
+                float(request.json['tool_diameter'])
+            )
+        })
     except Exception as e:
         traceback.print_exc()
-        return repr(e), 400
+        return jsonify({'status': "ERROR", 'message': repr(e)})
 
 
-@app.route("/initialize/", methods=["POST"])
-def endpoint_initialize():
+@app.route("/api/initialize/", methods=["POST"])
+def endpoint_api_initialize():
     machine_worker_process.send_message_initialize()
-    return 'OK'
+    return jsonify({'status': "OK"})
 
 
-@app.route("/abort/", methods=["POST"])
-def endpoint_abort():
+@app.route("/api/abort/", methods=["POST"])
+def endpoint_api_abort():
     machine_worker_process.kill()
-    return 'OK'
+    return jsonify({'status': "OK"})
 
 
-@app.route("/get_logs/", methods=["POST"])
-def endpoint_get_logs():
-    return jsonify(machine_worker_process.get_logs())
-
-
-@app.route("/")
-def endpoint_index():
-    def load(name):
-        with open(os.path.join(os.path.dirname(__file__), 'gcode_modules', name)) as f:
-            return f.read()
-
-    return render_template('index.html', modules=[
-        (name, load(name))
-        for name in sorted(os.listdir(os.path.join(os.path.dirname(__file__), 'gcode_modules')))
-        if name != '.' and name != '..' and name != '__init__.py' and name != '__pycache__'
-    ])
+@app.route("/api/get_logs/", methods=["POST"])
+def endpoint_api_get_logs():
+    return jsonify({
+        'status': "OK",
+        'logs': machine_worker_process.get_logs()
+    })
