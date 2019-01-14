@@ -18,6 +18,7 @@ import moves_to_svg
 from utils import python_to_gcode
 
 app = Flask(__name__, static_url_path='')
+machine_worker_process = machine_process.WorkerProcess.create_and_start()
 
 
 @app.route('/static/<path:path>')
@@ -28,7 +29,7 @@ def endpoint_serve_static_files(path):
 @app.route("/gcode/", methods=["POST"])
 def endpoint_run_gcode_command():
     input_text = request.json['gcode']
-    machine_process.send_message_gcode(python_to_gcode.python_to_gcode(input_text))
+    machine_worker_process.send_message_gcode(python_to_gcode.python_to_gcode(input_text))
     return 'OK'
 
 
@@ -69,19 +70,19 @@ def endpoint_simulate_moves_svg():
 
 @app.route("/initialize/", methods=["POST"])
 def endpoint_initialize():
-    machine_process.send_message_initialize()
+    machine_worker_process.send_message_initialize()
     return 'OK'
 
 
 @app.route("/abort/", methods=["POST"])
 def endpoint_abort():
-    machine_process.kill()
+    machine_worker_process.kill()
     return 'OK'
 
 
 @app.route("/get_logs/", methods=["POST"])
 def endpoint_get_logs():
-    return jsonify(machine_process.get_logs())
+    return jsonify(machine_worker_process.get_logs())
 
 
 @app.route("/")
