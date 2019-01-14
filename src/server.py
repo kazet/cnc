@@ -81,7 +81,7 @@ def endpoint_abort():
 
 @app.route("/get_logs/", methods=["POST"])
 def endpoint_get_logs():
-    return machine_process.get_logs()
+    return jsonify(machine_process.get_logs())
 
 
 @app.route("/")

@@ -28,7 +28,7 @@ $(document).ready(function() {
             var z = parseFloat($(this).data('direction-z')) * scale;
             $.ajax('/gcode/', {
                 data: JSON.stringify({
-                    'gcode': 'print("""G91 G00 X' + x + ' Y' + y + ' Z' + z + '""")'
+                    'gcode': 'emit("""G91 G00 X' + x + ' Y' + y + ' Z' + z + '""")'
                 }),
                 contentType: 'application/json',
                 type: 'POST',
@@ -76,7 +76,13 @@ $(document).ready(function() {
             $.ajax('/get_logs/', {
                 type: 'POST',
                 success: function(data) {
-                    addToLogs(data);
+                    for (var i=0; i<data.length; i++) {
+                        if (data[i].level == 'ERROR') {
+                            alert(data[i].message);
+                        }
+
+                        addToLogs(data[i].message + '\n');
+                    }
                 }
             });
         }, 500);

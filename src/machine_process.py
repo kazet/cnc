@@ -12,6 +12,11 @@ class WorkerProcessMessage():
     GCODE = 'GCODE'
 
 
+class WorkerProcessLogItemLevel():
+    INFO = 'INFO'
+    ERROR = 'ERROR'
+
+
 def worker_process(command_queue, log_queue):
     machine = config.MACHINE
 
@@ -21,22 +26,28 @@ def worker_process(command_queue, log_queue):
         try:
             if message == WorkerProcessMessage.INITIALIZE:
                 machine.initialize()
-                log_queue.put("Machine initialized successfully")
+                log_queue.put({
+                    'level': WorkerProcessLogItemLevel.INFO,
+                    'message': "Machine initialized successfully"
+                })
             elif message == WorkerProcessMessage.GCODE:
                 start_time = time.time()
 
                 gcode_interpreter.GCodeInterpreter(machine).run_gcode_string(data)
                 gcode_execution_time = time.time() - start_time
 
-                log_queue.put(
-                    "gcode interpreted successfully, took %.02f seconds" %
-                    gcode_execution_time,
-                )
+                log_queue.put({
+                    'level': WorkerProcessLogItemLevel.INFO,
+                    'message': "gcode interpreted successfully, took %.02f seconds" % gcode_execution_time,
+                })
             else:
                 assert(False)
         except Exception as e:
             traceback.print_exc()
-            log_queue.put("Unable to execute gcode: %s" % repr(e))
+            log_queue.put({
+                'level': WorkerProcessLogItemLevel.ERROR,
+                'message': "%s" % str(e),
+            })
 
 
 def spawn_worker_process():
@@ -61,10 +72,10 @@ def kill():
 
 
 def get_logs():
-    result = ''
+    result = []
     try:
         while True:
-            result += WORKER_LOG_QUEUE.get_nowait() + '\n'
+            result.append(WORKER_LOG_QUEUE.get_nowait())
     except queue.Empty:
         pass
 
