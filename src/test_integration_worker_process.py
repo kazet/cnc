@@ -3,8 +3,8 @@ import time
 
 from unittest import mock, TestCase
 
-import config
 from machine_process import WorkerProcess
+
 
 class WorkerProcessIntegrationTestCase(TestCase):
     def test_succesful_initialization(self):
@@ -28,7 +28,7 @@ class WorkerProcessIntegrationTestCase(TestCase):
                 )
         finally:
             worker_process.kill()
-        
+
     def test_failed_initialization(self):
         try:
             with mock.patch('config.MACHINE') as MockMachine:
@@ -64,7 +64,9 @@ class WorkerProcessIntegrationTestCase(TestCase):
                 worker_process.send_message_initialize()
                 worker_process.send_message_gcode("G0 X3 Y2 Z1")
                 time.sleep(0.1)
-                self.assertEqual(received_move_coordinates.value, b'x=3.000000 y=2.000000 z=1.000000 feed_rate=1000.000000')
+                self.assertEqual(
+                    received_move_coordinates.value,
+                    b'x=3.000000 y=2.000000 z=1.000000 feed_rate=1000.000000')
 
                 logs = worker_process.get_logs()
                 self.assertEqual(len(logs), 2)
@@ -74,10 +76,10 @@ class WorkerProcessIntegrationTestCase(TestCase):
                 self.assertTrue(logs[1]['message'].startswith("gcode interpreted successfully, took"))
         finally:
             worker_process.kill()
-        
+
     def test_failed_gcode_sending(self):
         try:
-            with mock.patch('config.MACHINE') as MockMachine:
+            with mock.patch('config.MACHINE'):
                 worker_process = WorkerProcess.create_and_start()
                 worker_process.send_message_initialize()
                 worker_process.send_message_gcode("Invalid")
