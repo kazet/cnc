@@ -1,7 +1,7 @@
 # An experimental milling machine driver with a web interface
 This is a milling machine driver that can be managed via web browser.
 
-Disclaimer: I wrote this app to learn how CNC machines, G-Code etc.
+Disclaimer: I wrote this app to learn how CNC machines, G code etc.
 work - it may not be stable yet. If you want to get actual stuff done,
 you may prefer to use different, production-ready milling machine software.
 
