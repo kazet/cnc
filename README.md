@@ -2,7 +2,7 @@
 Disclaimer: this tool may not be stable. If you want to get actual stuff done,
 you may prefer to use different, production-ready milling machine software.
 
-![Build status](https://travis-ci.com/kazetkazet/cnc.svg?branch=master)
+![Build status](https://travis-ci.com/kazet/cnc.svg?branch=master)
 
 ## App screenshot
 ![Screenshot](screenshot.png)
