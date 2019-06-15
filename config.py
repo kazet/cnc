@@ -1,41 +1,18 @@
-try:
-    __import__('RPi._GPIO')
-except RuntimeError:  # no Raspberry PI GPIO modules
-    # Use a dummy driver, that will fail when trying to issue actual commands
-    from motor_driver.dummy import DummyMotorDriver
-    MOTOR_DRIVER_CLASS = DummyMotorDriver
-else:  # we succesfully imported Raspberry PI GPIO modules
-    # Use Raspberry PI GPIO driver if we're on a Raspberry PI
-    from motor_driver.raspberry_pi_gpio import RaspberryPiGPIOMotorDriver
-    MOTOR_DRIVER_CLASS = RaspberryPiGPIOMotorDriver
-
-import machine.stepper_motor_control_machine
+from machine.arduino.machine import Arduino3AxisSerialMachine
 
 STEPS_PER_REVOLUTION = 200.0 * 32.0
 STEP_TIME = 0.000008
 
-MACHINE = machine.stepper_motor_control_machine.StepperMotorControlMachine(
-    x_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS({'DIR': 35, 'PUL': 37}, is_inverse=False),
-        backlash=0.2,
-        mm_per_revolution=3,
-        steps_per_revolution=STEPS_PER_REVOLUTION,
-        step_time=STEP_TIME,
-    ),
-    y_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS({'DIR': 33, 'PUL': 31}, is_inverse=True),
-        backlash=0.2,
-        mm_per_revolution=3,
-        steps_per_revolution=STEPS_PER_REVOLUTION,
-        step_time=STEP_TIME,
-    ),
-    z_axis=machine.stepper_motor_control_machine.MachineAxis(
-        motor=MOTOR_DRIVER_CLASS({'DIR': 36, 'PUL': 38}, is_inverse=True),
-        backlash=0,
-        mm_per_revolution=4,
-        steps_per_revolution=STEPS_PER_REVOLUTION,
-        step_time=STEP_TIME,
-    ),
+MACHINE = Arduino3AxisSerialMachine(
+    port='/dev/ttyUSB0',
+    # Because the X and Y axes screw pitch is 3mm, Z axis is 4mm on my machine.
+    # Feel free to configure as you see fit.
+    steps_per_mm_x=STEPS_PER_REVOLUTION / 3,
+    steps_per_mm_y=STEPS_PER_REVOLUTION / 3,
+    steps_per_mm_z=STEPS_PER_REVOLUTION / 4,
+    invert_x=False,
+    invert_y=False,
+    invert_z=False,
     default_feed_rate=500,
-    rapid_move_feed_rate=5000,
+    rapid_move_feed_rate=500,
 )

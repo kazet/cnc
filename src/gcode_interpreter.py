@@ -34,6 +34,7 @@ class GCodeInterpreter():
             line = pygcode.Line(input_line)
             for gcode in line.block.gcodes:
                 self.run_gcode_command(gcode)
+                self._machine.flush()
 
     def run_gcode_command(self, gcode):
         if isinstance(gcode, pygcode.gcodes.GCodeIncrementalDistanceMode):

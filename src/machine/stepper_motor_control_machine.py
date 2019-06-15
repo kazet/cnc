@@ -1,12 +1,7 @@
 import math
 
 from steps_sequence import create_xyz_steps_sequence
-
-
-class MachineUseException(Exception):
-    def __init__(self, message):
-        self.message = message
-
+from exceptions import MachineUseException
 
 class MachineAxis:
     def __init__(self, motor, backlash, mm_per_revolution, steps_per_revolution, step_time):
@@ -106,6 +101,9 @@ class StepperMotorControlMachine:
         self._x_axis.initialize()
         self._y_axis.initialize()
         self._z_axis.initialize()
+
+    def flush(self):
+        pass
 
     def move_by(self, x, y, z, feed_rate):
         if not self._initialized:

@@ -7,13 +7,16 @@ class SimulatedMachine:
         self._tool_position_y = 0
         self._tool_position_z = 0
 
+    def flush(self):
+        pass
+
     def move_by(self, x, y, z, feed_rate):
         if feed_rate == self._default_feed_rate:
             is_rapid = False
         elif feed_rate == self._rapid_move_feed_rate:
             is_rapid = True
         else:
-            assert(False)
+            is_rapid = False
 
         # We don't use the tool position from GCodeInterpreter, because we want to be
         # more realistic: the machine has its own tool position, and the interpreter role
