@@ -4,7 +4,6 @@ STEPS_PER_REVOLUTION = 200.0 * 32.0
 STEP_TIME = 0.000008
 
 MACHINE = Arduino3AxisSerialMachine(
-    port='/dev/ttyUSB0',
     # Because the X and Y axes screw pitch is 3mm, Z axis is 4mm on my machine.
     # Feel free to configure as you see fit.
     steps_per_mm_x=STEPS_PER_REVOLUTION / 3,

@@ -1,4 +1,5 @@
-import binascii
+import logging
+import glob
 import serial
 import struct
 import time
@@ -6,10 +7,17 @@ import time
 from machine.arduino import messages
 from exceptions import MachineUseException
 
+
+LOGGER = logging.getLogger('cnc')
+
+
+class Arduino3AxisSerialMachineConfigurationError(Exception):
+    pass
+
+
 class Arduino3AxisSerialMachine:
     def __init__(
             self,
-            port,
             steps_per_mm_x,
             steps_per_mm_y,
             steps_per_mm_z,
@@ -17,7 +25,12 @@ class Arduino3AxisSerialMachine:
             invert_y,
             invert_z,
             default_feed_rate,
-            rapid_move_feed_rate):
+            rapid_move_feed_rate,
+            port_path_template='/dev/ttyUSB*'):
+        port = self._autodetect_port(port_path_template)
+        if not port:
+            LOGGER.error("Unable to detect serial port. To facilitate experiments, /dev/null will be used.")
+
         self._ser = serial.Serial(port)
         self._initialized = False
         self._steps_per_mm_x = steps_per_mm_x
@@ -29,6 +42,20 @@ class Arduino3AxisSerialMachine:
         self._default_feed_rate = default_feed_rate
         self._rapid_move_feed_rate = rapid_move_feed_rate
         self._last_direction = {}
+
+    def _autodetect_port(self, port_path_template):
+        detected_ports = glob.glob(port_path_template)
+
+        if not detected_ports:
+            return None
+
+        if len(detected_ports) > 1:
+            raise Arduino3AxisSerialMachineConfigurationError(
+                "Multiple USB serial ports attached: %s" %
+                detected_ports
+            )
+
+        return detected_ports[0]
 
     def initialize(self):
         self._initialized = True
@@ -122,7 +149,7 @@ class Arduino3AxisSerialMachine:
         y = abs(y)
         z = abs(z)
 
-        time_us = 1_000_000 * 60 * max(x, y, z) / feed_rate
+        time_us = 1000000 * 60 * max(x, y, z) / feed_rate
 
         self._three_pwm(
             int(time_us),
@@ -138,4 +165,3 @@ class Arduino3AxisSerialMachine:
     @property
     def rapid_move_feed_rate(self):
         return self._rapid_move_feed_rate
-

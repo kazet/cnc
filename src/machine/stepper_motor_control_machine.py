@@ -3,6 +3,7 @@ import math
 from steps_sequence import create_xyz_steps_sequence
 from exceptions import MachineUseException
 
+
 class MachineAxis:
     def __init__(self, motor, backlash, mm_per_revolution, steps_per_revolution, step_time):
         self._motor = motor
