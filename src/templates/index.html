@@ -1,14 +1,25 @@
 {% extends "base.html" %}
 
 {% block extrahead %}
+    <script src="/static/vendor/js/jquery-3.3.1.min.js"></script>
 	<script src="/static/vendor/js/three.js/build/three.js"></script>
 	<script src="/static/vendor/js/three.js/examples/js/controls/OrbitControls.js"></script>
 	<script src="/static/vendor/js/three.js/examples/js/WebGL.js"></script>
     <script src="/static/vendor/js/ace-1.4.8/ace.js"></script>
+
+    <script src="/static/js/logging.js"></script>
+    <script src="/static/js/cnc_manager.js"></script>
+    <script src="/static/js/milling_3d_view.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            cnc_manager.initializeCNCManager($('#cnc-manager'));
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
-    <div id="manager-page">
+    <div id="cnc-manager">
         <div class="container">
             <div class="box has-large-top-margin">
                 <div class="columns">
@@ -16,7 +27,7 @@
                         <h2 class="subtitle">Machine initialization</h2>
                         <div class="field">
                             <div class="control">
-                                <button class="button is-primary is-fullwidth initialize-trigger">
+                                <button class="button is-primary is-fullwidth initialize-button">
                                     <span class="icon"><i class="fa fa-sync"></i></span>
                                     <span>Initialize machine</span>
                                 </button>
@@ -49,11 +60,19 @@
                     <div class="column is-one-quarter">
                         <h2 class="subtitle">Manual movement: Z axis</h2>
 
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="1">
+                        <button
+                                class="button is-primary is-fullwidth move-button"
+                                data-direction-x="0"
+                                data-direction-y="0"
+                                data-direction-z="1">
                             <span class="icon"><i class="fa fa-arrow-up"></i></span><span> (Z +1)</span>
                         </button>
 
-                        <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="0" data-direction-z="-1">
+                        <button
+                                class="button is-primary is-fullwidth move-button"
+                                data-direction-x="0"
+                                data-direction-y="0"
+                                data-direction-z="-1">
                             <span class="icon"><i class="fa fa-arrow-down"></i></span><span> (Z -1)</span>
                         </button>
                     </div>
@@ -61,25 +80,41 @@
                         <h2 class="subtitle">Manual movement: X&Y axes</h2>
                         <div class="columns is-mobile">
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="-1"
+                                        data-direction-y="1"
+                                        data-direction-z="0">
                                     X - 1, Y + 1
                                 </button>
                             </div>
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="0"
+                                        data-direction-y="1"
+                                        data-direction-z="0">
                                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
                                     <span>Y + 1</span>
                                 </button>
                             </div>
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="1"
+                                        data-direction-y="1"
+                                        data-direction-z="0">
                                     X + 1, Y + 1
                                 </button>
                             </div>
                         </div>
                         <div class="columns is-mobile">
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="0" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="-1"
+                                        data-direction-y="0"
+                                        data-direction-z="0">
                                     <span class="icon"><i class="fa fa-arrow-left"></i></span>
                                     <span>X - 1</span>
                                 </button>
@@ -88,7 +123,11 @@
                                 &nbsp;
                             </div>
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="0" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="1"
+                                        data-direction-y="0"
+                                        data-direction-z="0">
                                     <span class="icon"><i class="fa fa-arrow-right"></i></span>
                                     <span>X + 1</span>
                                 </button>
@@ -96,18 +135,30 @@
                         </div>
                         <div class="columns is-mobile">
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="-1" data-direction-y="-1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="-1"
+                                        data-direction-y="-1"
+                                        data-direction-z="0">
                                     X - 1, Y - 1
                                 </button>
                             </div>
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="0" data-direction-y="-1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="0"
+                                        data-direction-y="-1"
+                                        data-direction-z="0">
                                     <span class="icon"><i class="fa fa-arrow-down"></i></span>
                                     <span>Y - 1</span>
                                 </button>
                             </div>
                             <div class="column">
-                                <button class="button is-primary is-fullwidth move-trigger" data-direction-x="1" data-direction-y="-1" data-direction-z="0">
+                                <button
+                                        class="button is-primary is-fullwidth move-button"
+                                        data-direction-x="1"
+                                        data-direction-y="-1"
+                                        data-direction-z="0">
                                     X + 1, Y - 1
                                 </button>
                             </div>
@@ -136,7 +187,7 @@
                             <input class="input tool-diameter" type="text" value="0.3">
                         </div>
                         <div class="control">
-                            <button class="button is-primary is-fullwidth simulate">
+                            <button class="button is-primary is-fullwidth simulate-button">
                                 <span class="icon"><i class="fa fa-image"></i></span>
                                 <span>Simulate</span>
                             </button>
@@ -144,17 +195,19 @@
                     </div>
                 </div>
                 <div class="column">
-                    <button class="button is-primary is-fullwidth run-pygcode">
+                    <button class="button is-primary is-fullwidth run-button">
                         <span class="icon"><i class="fa fa-play"></i></span>
                         <span>Run</span>
                     </button>
                 </div>
                 <div class="column">
-                    <button class="button is-danger is-fullwidth abort">
+                    <button class="button is-danger is-fullwidth abort-button">
                         <span class="icon"><i class="fa fa-stop"></i></span>
                         <span>Abort</span>
                     </button>
-                    <p class="help">Caution: aborting is <b>not</b> a graceful shutdown. May leave the machine in an inconsistent state.</p>
+                    <p class="help">
+                        Caution: aborting is <b>not</b> a graceful shutdown. May leave the machine in an inconsistent state.
+                    </p>
                 </div>
             </div>
             <div class="columns">

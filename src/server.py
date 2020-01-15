@@ -13,13 +13,13 @@ from typeguard import typechecked
 
 import gcode_interpreter
 import machine.simulated_machine
-import machine_process
+import worker_process
 import moves_to_svg
 
 from utils import python_to_gcode
 
 app = Flask(__name__, static_url_path='')
-machine_worker_process = machine_process.WorkerProcess.create_and_start()
+machine_worker_process = worker_process.WorkerProcess.create_and_start()
 
 
 @app.route("/")

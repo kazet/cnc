@@ -3,7 +3,7 @@ import time
 
 from unittest import mock, TestCase
 
-from machine_process import WorkerProcess
+from worker_process import WorkerProcess
 
 
 class WorkerProcessIntegrationTestCase(TestCase):
