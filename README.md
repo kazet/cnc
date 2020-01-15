@@ -1,5 +1,5 @@
 # An experimental milling machine driver with a web interface
-This is a milling machine driver that can be managed via web browser.
+This is a milling machine driver that can be managed from a web browser.
 
 Disclaimer: I wrote this app to learn how CNC machines, G-code etc.
 work - it may not be stable yet. If you want to get actual stuff done,
@@ -12,7 +12,7 @@ you may prefer to use different, production-ready milling machine software.
 
 ## How to connect
 This tool, by default, uses an Arduino microcontroller connected via serial port
-that interfaces with stepper motor drivers. The GPIO pin numbers for `DIR` and `PUL`
+that interfaces with stepper motor drivers. The output pin numbers for `DIR` and `PUL`
 stepper motor driver inputs for each axis are currently defined in
 `src/machine/arduino/main/pinout.h`.
 
