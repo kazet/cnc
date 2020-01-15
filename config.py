@@ -1,7 +1,6 @@
 from machine.arduino.machine import Arduino3AxisSerialMachine
 
 STEPS_PER_REVOLUTION = 200.0 * 32.0
-STEP_TIME = 0.000008
 
 MACHINE = Arduino3AxisSerialMachine(
     # Because the X and Y axes screw pitch is 3mm, Z axis is 4mm on my machine.

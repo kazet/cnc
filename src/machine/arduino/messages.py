@@ -1,3 +1,4 @@
+# The message codes that are used by the Arduino backend.
 MESSAGE_PING = 0x31
 MESSAGE_PONG = 0x32
 MESSAGE_THREE_PWM = 0x33

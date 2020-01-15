@@ -9,6 +9,7 @@ from flask import (
     request,
     send_from_directory,
 )
+from typeguard import typechecked
 
 import gcode_interpreter
 import machine.simulated_machine
@@ -23,6 +24,9 @@ machine_worker_process = machine_process.WorkerProcess.create_and_start()
 
 @app.route("/")
 def endpoint_index():
+    """
+    Serves the index page.
+    """
     def load(name):
         with open(os.path.join(os.path.dirname(__file__), 'pygcode_modules', name)) as f:
             return f.read()
@@ -35,12 +39,19 @@ def endpoint_index():
 
 
 @app.route('/static/<path:path>')
-def endpoint_serve_static_files(path):
+@typechecked
+def endpoint_serve_static_files(path: str):
+    """
+    Serves a static file.
+    """
     return send_from_directory('static', path)
 
 
 @app.route("/api/pygcode/", methods=["POST"])
 def endpoint_api_run_pygcode_command():
+    """
+    Serves an API endpoint, running G-code.
+    """
     input_text = request.json['pygcode']
 
     try:
@@ -55,6 +66,9 @@ def endpoint_api_run_pygcode_command():
 
 @app.route("/api/simulate/json/", methods=["POST"])
 def endpoint_api_simulate_moves_json():
+    """
+    Serves an API endpoint, simulating G-code moves to JSON.
+    """
     input_text = request.json['pygcode']
 
     try:
@@ -74,6 +88,9 @@ def endpoint_api_simulate_moves_json():
 
 @app.route("/api/simulate/svg/", methods=["POST"])
 def endpoint_api_simulate_moves_svg():
+    """
+    Serves an API endpoint, simulating G-code moves to SVG.
+    """
     input_text = request.json['pygcode']
 
     try:
@@ -96,18 +113,27 @@ def endpoint_api_simulate_moves_svg():
 
 @app.route("/api/initialize/", methods=["POST"])
 def endpoint_api_initialize():
+    """
+    Serves an API endpoint, initializing the CNC machine.
+    """
     machine_worker_process.send_message_initialize()
     return jsonify({'status': "OK"})
 
 
 @app.route("/api/abort/", methods=["POST"])
 def endpoint_api_abort():
+    """
+    Serves an API endpoint, non-gracefully emergency aborting what is being done now.
+    """
     machine_worker_process.kill()
     return jsonify({'status': "OK"})
 
 
 @app.route("/api/get_logs/", methods=["POST"])
 def endpoint_api_get_logs():
+    """
+    Serves an API endpoint, reading the machine logs.
+    """
     return jsonify({
         'status': "OK",
         'logs': machine_worker_process.get_logs()

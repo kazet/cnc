@@ -1,7 +1,15 @@
 import math
 
+from typeguard import typechecked
 
-def code(radius=15, num_sides=6):
+
+@typechecked
+def code(radius: int = 15, num_sides: int = 6) -> str:
+    """
+    Example G-code module, an asterisk.
+
+    Please simulate first, before milling.
+    """
     result = ["G90"]
 
     for i in range(num_sides):

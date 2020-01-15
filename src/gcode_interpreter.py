@@ -1,42 +1,71 @@
 import math
+import typing
 
+from typeguard import typechecked
 import pygcode
 import pygcode.gcodes
 
+from machine.base import BaseMachine
 from tool_position import ThreeAxesToolPositionContainer
 from utils.math_utils import euclidean_distance
+from utils.typing import (
+    Numeric,
+    mockable,
+)
 
 
 class Mode():
+    """
+    G-code mode: if the positions are relative or absolute.
+    """
     ABSOLUTE = 0
     INCREMENTAL = 1
 
 
 class Plane():
+    """
+    In what plane will the circular motion be executed.
+    """
     XY = 0
     ZX = 1
     YZ = 2
 
 
 class InvalidGCodeException(Exception):
-    def __init__(self, message):
+    """
+    An exception raised when we couldn't interpret given G-code.
+    """
+    def __init__(self, message: str):
         self.message = message
 
 
 class GCodeInterpreter():
-    def __init__(self, machine):
+    """
+    A class that wraps around a BaseMachine and is able to parse G-code, translate it to actual tool
+    movement and send to a machine.
+    """
+    @typechecked
+    def __init__(self, machine: mockable(BaseMachine)):
         self._machine = machine
         self._tool_positions = ThreeAxesToolPositionContainer()
         self._zero_tool_planes_feed()
 
-    def run_gcode_string(self, input_text):
+    @typechecked
+    def run_gcode_string(self, input_text: str) -> None:
+        """
+        Parse a string with G-code and run it on a machine.
+        """
         for input_line in input_text.split('\n'):
             line = pygcode.Line(input_line)
             for gcode in line.block.gcodes:
                 self.run_gcode_command(gcode)
                 self._machine.flush()
 
-    def run_gcode_command(self, gcode):
+    @typechecked
+    def run_gcode_command(self, gcode: pygcode.gcodes.GCode) -> None:
+        """
+        Run single G-code command on a machine.
+        """
         if isinstance(gcode, pygcode.gcodes.GCodeIncrementalDistanceMode):
             self._mode = Mode.INCREMENTAL
         elif isinstance(gcode, pygcode.gcodes.GCodeAbsoluteDistanceMode):
@@ -128,7 +157,14 @@ class GCodeInterpreter():
         else:
             raise InvalidGCodeException("Unknown GCode: %s" % gcode.__class__)
 
-    def _arc(self, angular_direction, finish_x, finish_y, finish_z, parameters):
+    @typechecked
+    def _arc(
+            self,
+            angular_direction: int,
+            finish_x: Numeric,
+            finish_y: Numeric,
+            finish_z: Numeric,
+            parameters: typing.Dict[str, Numeric]) -> None:
         RADIUS_EPSILON = 10**(-2)
         NUM_ANGULAR_STEPS = 60
 
@@ -193,7 +229,8 @@ class GCodeInterpreter():
             start_tool_position_y + finish_y,
             start_tool_position_z)
 
-    def _move_to_absolute(self, x, y, z):
+    @typechecked
+    def _move_to_absolute(self, x: Numeric, y: Numeric, z: Numeric) -> None:
         self._move_by_and_update_tool_position(
             x - self._tool_positions.x.tool_position,
             y - self._tool_positions.y.tool_position,
@@ -201,20 +238,23 @@ class GCodeInterpreter():
             self._feed_rate,
         )
 
-    def _move_by_and_update_tool_position(self, x, y, z, feed_rate):
+    @typechecked
+    def _move_by_and_update_tool_position(self, x: Numeric, y: Numeric, z: Numeric, feed_rate: Numeric) -> None:
         self._machine.move_by(x, y, z, feed_rate)
         self._tool_positions.x.add(x)
         self._tool_positions.y.add(y)
         self._tool_positions.z.add(z)
 
-    def _get_axis_position(self, axis):
+    @typechecked
+    def _get_axis_position(self, axis: str) -> Numeric:
         return {
             'X': self._tool_positions.x.tool_position,
             'Y': self._tool_positions.y.tool_position,
             'Z': self._tool_positions.z.tool_position,
         }[axis]
 
-    def _coordinates_to_incremental(self, axis, position, mode):
+    @typechecked
+    def _coordinates_to_incremental(self, axis: str, position: Numeric, mode: int) -> Numeric:
         if mode == Mode.ABSOLUTE:
             return position - self._get_axis_position(axis)
         elif mode == Mode.INCREMENTAL:

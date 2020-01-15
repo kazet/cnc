@@ -2,26 +2,43 @@ import multiprocessing
 import queue
 import time
 import traceback
+import typing
+
+from typeguard import typechecked
 
 import config
 import gcode_interpreter
 
 
 class WorkerProcessAlreadyStartedException(Exception):
+    """
+    The machine process has already been started.
+    """
     pass
 
 
 class WorkerProcessLogItemLevel():
+    """
+    Severities of messages returned by the process.
+    """
     INFO = 'INFO'
     ERROR = 'ERROR'
 
 
 class WorkerProcessMessage():
+    """
+    Kinds of messages sent to the process.
+    """
     INITIALIZE = 'INITIALIZE'
     GCODE = 'GCODE'
 
 
 class WorkerProcess():
+    """
+    A separate process that is a wrapper around a connection to a machine.
+
+    G-Code and initialization requests may be send and logs may be received back.
+    """
     def __init__(self):
         self._started = False
 
@@ -31,7 +48,8 @@ class WorkerProcess():
         worker_process.start()
         return worker_process
 
-    def start(self):
+    @typechecked
+    def start(self) -> None:
         if self._started:
             raise WorkerProcessAlreadyStartedException("This particular worker process has already benn started")
         else:
@@ -43,17 +61,21 @@ class WorkerProcess():
             )
             self._process.start()
 
-    def send_message_initialize(self):
+    @typechecked
+    def send_message_initialize(self) -> None:
         self._command_queue.put((WorkerProcessMessage.INITIALIZE, ''))
 
-    def send_message_gcode(self, gcode):
+    @typechecked
+    def send_message_gcode(self, gcode: str) -> None:
         self._command_queue.put((WorkerProcessMessage.GCODE, gcode))
 
-    def kill(self):
+    @typechecked
+    def kill(self) -> None:
         self._process.terminate()
         self._started = False
 
-    def get_logs(self):
+    @typechecked
+    def get_logs(self) -> typing.List[typing.Dict[str, str]]:
         result = []
         try:
             while True:
@@ -64,7 +86,8 @@ class WorkerProcess():
         return result
 
     @staticmethod
-    def _run(command_queue, log_queue):
+    @typechecked
+    def _run(command_queue: multiprocessing.Queue, log_queue: multiprocessing.Queue) -> None:
         machine = config.MACHINE
 
         while True:

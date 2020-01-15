@@ -1,7 +1,13 @@
 import math
 
+from utils.typing import Numeric
 
-def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
+
+def code(
+        radius: Numeric = 35,
+        hole_spacing: Numeric = 8,
+        hole_radius: Numeric = 1.75,
+        safe_height: Numeric = 5) -> str:
     """
     This example drills a filled, circular pattern consisting of small holes.
 
@@ -10,6 +16,8 @@ def code(radius=35, hole_spacing=8, hole_radius=1.75, safe_height=5):
         hole_spacing: the distance between hole centers
         hole_radius: hole radius
         safe_height: the Z height to move the tool up when moving, not drilling
+
+    Please simulate first, before milling.
     """
 
     result = """

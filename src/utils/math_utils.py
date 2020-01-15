@@ -1,7 +1,15 @@
 import math
+import typing
+
+from typeguard import typechecked
+
+from utils.typing import Numeric
 
 
-def euclidean_distance(point1, point2):
+@typechecked
+def euclidean_distance(
+        point1: typing.Tuple[Numeric, Numeric, Numeric],
+        point2: typing.Tuple[Numeric, Numeric, Numeric]) -> Numeric:
     """
     Returns the euclidean distance between two points.
 

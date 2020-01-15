@@ -1,21 +1,44 @@
 import math
 import svgwrite
+import typing
+
+from typeguard import typechecked
 
 from utils.random import random_token
+from utils.typing import Numeric
 
 
-def line_id_to_stroke(line_id):
+@typechecked
+def line_id_to_stroke(line_id: int) -> svgwrite.rgb:
+    """
+    Depending on the line identifier, use red or gray color. This allows us to have a grid,
+    where every tenth line is red.
+    """
     if line_id % 10 == 0:
         return svgwrite.rgb(50, 0, 0, '%')
     else:
         return svgwrite.rgb(70, 70, 70, '%')
 
 
-def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
+@typechecked
+def moves_to_svg(
+        moves: typing.List[typing.Tuple[Numeric, Numeric, Numeric]],
+        tool_diameter: Numeric,
+        pixels_per_mm: Numeric = 20) -> str:
+    """
+    Renders a list of tool moves (a sequence of (x, y, z) positions) as a SVG file and returns its path.
+
+    :param moves: moves to be rendered
+    :param tool_diameter: the tool diameter is used as the line width when rendering
+    :param pixels_per_mm: the scale of the image (how many pixels should one millimeter take)
+
+    :return: SVG file path
+    """
     # hide Z axis
     moves = [(x, y) for (x, y, _) in moves]
 
-    def scale_position(position):
+    @typechecked
+    def scale_position(position: typing.Tuple[Numeric, Numeric]) -> typing.Tuple[Numeric, Numeric]:
         x, y = position
         return (pixels_per_mm * x, pixels_per_mm * y)
 
@@ -30,9 +53,9 @@ def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
 
     last = moves[0]
     token = random_token()
-    file_name = 'static/%s.svg' % token
+    file_path = 'static/%s.svg' % token
     dwg = svgwrite.Drawing(
-        file_name,
+        file_path,
         profile='tiny',
     )
 
@@ -80,4 +103,4 @@ def moves_to_svg(moves, tool_diameter, pixels_per_mm=20):
 
     dwg.save()
 
-    return file_name
+    return file_path

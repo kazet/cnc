@@ -1,7 +1,12 @@
 import math
 
 
-def code(radius=15, num_sides=7):
+def code(radius: int = 15, num_sides: int = 7) -> str:
+    """
+    Example G-code module, regular polygon.
+
+    Please simulate first, before milling.
+    """
     result = ["G90"]
 
     for i in range(num_sides):

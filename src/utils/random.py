@@ -1,8 +1,14 @@
 import random
 import string
 
+from typeguard import typechecked
 
-def random_token(length=40):
+
+@typechecked
+def random_token(length: int = 40) -> str:
+    """
+    Returns a random token with given length.
+    """
     # XXX not cryptographically-secure
     result = ''
     for _ in range(length):

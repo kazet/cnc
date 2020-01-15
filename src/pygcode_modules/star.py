@@ -1,7 +1,18 @@
 import math
 
+from typeguard import typechecked
 
-def code(radius=15, num_sides=10):
+
+@typechecked
+def code(radius: int = 15, num_sides: int = 10) -> str:
+    """
+    Example G-code module, a star.
+
+    Please simulate first, before milling.
+
+    :param radius: the radius of the star
+    :param num_sides: number of triangles coming out from the star
+    """
     result = ["G90"]
 
     num_sides = num_sides * 2

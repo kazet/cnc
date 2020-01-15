@@ -1,4 +1,12 @@
+from typeguard import typechecked
+
+from utils.typing import Numeric
+
+
 class AxisToolPosition():
+    """
+    A class to manage tool position in one axis.
+    """
     def __init__(self):
         self._tool_position = 0
 
@@ -10,7 +18,8 @@ class AxisToolPosition():
         """
         self._tool_position = 0
 
-    def add(self, how_much):
+    @typechecked
+    def add(self, how_much: Numeric) -> None:
         """
         Adds a given value to tool position.
 
@@ -21,6 +30,9 @@ class AxisToolPosition():
 
     @property
     def tool_position(self):
+        """
+        Return the current tool position.
+        """
         return self._tool_position
 
 
@@ -51,12 +63,21 @@ class ThreeAxesToolPositionContainer():
 
     @property
     def x(self):
+        """
+        Return the current tool position on X axis.
+        """
         return self._x
 
     @property
     def y(self):
+        """
+        Return the current tool position on Y axis.
+        """
         return self._y
 
     @property
     def z(self):
+        """
+        Return the current tool position on Z axis.
+        """
         return self._z

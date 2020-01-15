@@ -1,4 +1,9 @@
-def code():
+def code() -> str:
+    """
+    Example G-code module, an arrow.
+
+    Please simulate first, before milling.
+    """
     return ("""
         G91
         G0 X0 Y2

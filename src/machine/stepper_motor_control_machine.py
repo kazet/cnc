@@ -1,11 +1,26 @@
 import math
 
-from steps_sequence import create_xyz_steps_sequence
-from exceptions import MachineUseException
+from machine.base import BaseMachine
+from motor_driver.base import BaseMotorDriver
+from utils.steps_sequence import create_xyz_steps_sequence
+from utils.typing import Numeric
+from exceptions import MachineCommunicationException
+from typeguard import typechecked
 
 
 class MachineAxis:
-    def __init__(self, motor, backlash, mm_per_revolution, steps_per_revolution, step_time):
+    """
+    One axis, where one stepper motor, that we control, is connected.
+    """
+
+    @typechecked
+    def __init__(
+            self,
+            motor: BaseMotorDriver,
+            backlash: Numeric,
+            mm_per_revolution: Numeric,
+            steps_per_revolution: Numeric,
+            step_time: Numeric) -> None:
         self._motor = motor
         self._backlash = backlash
         self._mm_per_revolution = mm_per_revolution
@@ -14,21 +29,25 @@ class MachineAxis:
         self._last_sign = 0
 
     @property
-    def step_time(self):
+    @typechecked
+    def step_time(self) -> Numeric:
         return self._step_time
 
     @property
-    def motor(self):
+    @typechecked
+    def motor(self) -> BaseMotorDriver:
         return self._motor
 
-    def steps_needed_to_move_by(self, amount_mm):
+    @typechecked
+    def steps_needed_to_move_by(self, amount_mm) -> Numeric:
         return int(
             self._steps_per_revolution *
             amount_mm /
             self._mm_per_revolution
         )
 
-    def initialize(self):
+    @typechecked
+    def initialize(self) -> None:
         # The existence of a backlash means, that the tool can move self._backlash
         # milimeters to the left or to the right when force is applied.
         #
@@ -58,7 +77,8 @@ class MachineAxis:
         for unused_i in range(int(self.steps_per_mm(self._backlash / 2.0))):
             self._motor.step_left(self._step_time)
 
-    def compensate_for_backlash(self, amount):
+    @typechecked
+    def compensate_for_backlash(self, amount: Numeric) -> None:
         if amount > 0:
             sign = 1
         elif amount == 0:
@@ -84,12 +104,23 @@ class MachineAxis:
                     self._motor.step_right(self._step_time)
             self._last_sign = sign
 
-    def steps_per_mm(self, mm):
+    @typechecked
+    def steps_per_mm(self, mm: Numeric) -> Numeric:
         return self._steps_per_revolution * mm / self._mm_per_revolution
 
 
-class StepperMotorControlMachine:
-    def __init__(self, x_axis, y_axis, z_axis, default_feed_rate, rapid_move_feed_rate):
+class StepperMotorControlMachine(BaseMachine):
+    """
+    An implementation of a BaseMachine that has 3 axes controlled by separate BaseMotorDrivers.
+    """
+    @typechecked
+    def __init__(
+            self,
+            x_axis: MachineAxis,
+            y_axis: MachineAxis,
+            z_axis: MachineAxis,
+            default_feed_rate: Numeric,
+            rapid_move_feed_rate: Numeric):
         self._x_axis = x_axis
         self._y_axis = y_axis
         self._z_axis = z_axis
@@ -97,18 +128,21 @@ class StepperMotorControlMachine:
         self._default_feed_rate = default_feed_rate
         self._rapid_move_feed_rate = rapid_move_feed_rate
 
-    def initialize(self):
+    @typechecked
+    def initialize(self) -> None:
         self._initialized = True
         self._x_axis.initialize()
         self._y_axis.initialize()
         self._z_axis.initialize()
 
-    def flush(self):
+    @typechecked
+    def flush(self) -> None:
         pass
 
-    def move_by(self, x, y, z, feed_rate):
+    @typechecked
+    def move_by(self, x: Numeric, y: Numeric, z: Numeric, feed_rate: Numeric) -> None:
         if not self._initialized:
-            raise MachineUseException("Uninitialized machine")
+            raise MachineCommunicationException("Uninitialized machine")
 
         self._compensate_for_backlash(x, y, z)
 
@@ -167,14 +201,16 @@ class StepperMotorControlMachine:
             motor.step(step_time)
 
     @property
-    def default_feed_rate(self):
+    @typechecked
+    def default_feed_rate(self) -> Numeric:
         return self._default_feed_rate
 
     @property
-    def rapid_move_feed_rate(self):
+    @typechecked
+    def rapid_move_feed_rate(self) -> Numeric:
         return self._rapid_move_feed_rate
 
-    def _compensate_for_backlash(self, x, y, z):
+    def _compensate_for_backlash(self, x: Numeric, y: Numeric, z: Numeric) -> None:
         self._x_axis.compensate_for_backlash(x)
         self._y_axis.compensate_for_backlash(y)
         self._z_axis.compensate_for_backlash(z)

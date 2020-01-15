@@ -3,7 +3,7 @@
 cd $(dirname "$0")
 
 if [[ ! -e venv ]]; then
-    virtualenv -p /usr/bin/python3 venv
+    virtualenv -p /usr/bin/python3.7 venv
 fi
 
 . venv/bin/activate

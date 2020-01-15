@@ -1,4 +1,9 @@
 def code():
+    """
+    Example G-code module, a square.
+
+    Please simulate first, before milling.
+    """
     return """
         G91
         G0 X20 Y0
