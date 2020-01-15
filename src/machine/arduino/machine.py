@@ -16,9 +16,9 @@ from utils.typing import Numeric
 LOGGER = logging.getLogger('cnc')
 
 
-class Arduino3AxisSerialMachineConfigurationError(Exception):
+class Arduino3AxisSerialMachineError(Exception):
     """
-    There is a problem with configuring the attached Arduino.
+    There is a problem with communication with the attached Arduino.
     """
     pass
 
@@ -52,8 +52,11 @@ class Arduino3AxisSerialMachine(BaseMachine):
         :param rapid_move_feed_rate: the default feed rate when moving the tool
         """
         port = self._autodetect_port(port_path_template)
-        if not port:
+        if port:
+            self._real_machine_connected = True
+        else:
             LOGGER.error("Unable to detect serial port. To facilitate experiments, /dev/null will be used.")
+            self._real_machine_connected = False
 
         self._ser = serial.Serial(port)
         self._initialized = False
@@ -67,6 +70,10 @@ class Arduino3AxisSerialMachine(BaseMachine):
         self._rapid_move_feed_rate = rapid_move_feed_rate
         self._last_direction = {}
 
+    def guard_that_a_real_machine_is_connected(self) -> None:
+        if not self._real_machine_connected:
+            raise Arduino3AxisSerialMachineError("No actual machine is connected")
+
     @typechecked
     def _autodetect_port(self, port_path_template: str) -> typing.Union[str, None]:
         detected_ports = glob.glob(port_path_template)
@@ -75,7 +82,7 @@ class Arduino3AxisSerialMachine(BaseMachine):
             return None
 
         if len(detected_ports) > 1:
-            raise Arduino3AxisSerialMachineConfigurationError(
+            raise Arduino3AxisSerialMachineError(
                 "Multiple USB serial ports attached: %s" %
                 detected_ports
             )
@@ -87,6 +94,8 @@ class Arduino3AxisSerialMachine(BaseMachine):
         """
         Please refer to the docstring in the base class.
         """
+        self.guard_that_a_real_machine_is_connected()
+
         self._initialized = True
         self._ping_until_ok()
 
@@ -108,6 +117,8 @@ class Arduino3AxisSerialMachine(BaseMachine):
         """
         Please refer to the docstring in the base class.
         """
+        self.guard_that_a_real_machine_is_connected()
+
         self._ser.write(struct.pack('B', messages.MESSAGE_FLUSH))
         content = self._ser.read(1)
         response, = struct.unpack('B', content)
@@ -167,6 +178,8 @@ class Arduino3AxisSerialMachine(BaseMachine):
         """
         Please refer to the docstring in the base class.
         """
+        self.guard_that_a_real_machine_is_connected()
+
         if not self._initialized:
             raise MachineCommunicationException("Uninitialized machine")
 
