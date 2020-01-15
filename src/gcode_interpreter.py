@@ -1,3 +1,4 @@
+import enum
 import math
 import typing
 
@@ -14,7 +15,7 @@ from utils.typing import (
 )
 
 
-class Mode():
+class Mode(enum.Enum):
     """
     G-code mode: if the positions are relative or absolute.
     """
@@ -22,7 +23,7 @@ class Mode():
     INCREMENTAL = 1
 
 
-class Plane():
+class Plane(enum.Enum):
     """
     In what plane will the circular motion be executed.
     """
@@ -254,7 +255,7 @@ class GCodeInterpreter():
         }[axis]
 
     @typechecked
-    def _coordinates_to_incremental(self, axis: str, position: Numeric, mode: int) -> Numeric:
+    def _coordinates_to_incremental(self, axis: str, position: Numeric, mode: Mode) -> Numeric:
         if mode == Mode.ABSOLUTE:
             return position - self._get_axis_position(axis)
         elif mode == Mode.INCREMENTAL:

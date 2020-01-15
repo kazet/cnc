@@ -1,3 +1,4 @@
+import enum
 import multiprocessing
 import queue
 import time
@@ -17,7 +18,7 @@ class WorkerProcessAlreadyStartedException(Exception):
     pass
 
 
-class WorkerProcessLogItemLevel():
+class WorkerProcessLogItemLevel(enum.Enum):
     """
     Severities of messages returned by the process.
     """
@@ -25,7 +26,7 @@ class WorkerProcessLogItemLevel():
     ERROR = 'ERROR'
 
 
-class WorkerProcessMessage():
+class WorkerProcessMessage(enum.Enum):
     """
     Kinds of messages sent to the process.
     """
@@ -97,7 +98,7 @@ class WorkerProcess():
                 if message == WorkerProcessMessage.INITIALIZE:
                     machine.initialize()
                     log_queue.put({
-                        'level': WorkerProcessLogItemLevel.INFO,
+                        'level': WorkerProcessLogItemLevel.INFO.value,
                         'message': "Machine initialized successfully"
                     })
                 elif message == WorkerProcessMessage.GCODE:
@@ -107,7 +108,7 @@ class WorkerProcess():
                     gcode_execution_time = time.time() - start_time
 
                     log_queue.put({
-                        'level': WorkerProcessLogItemLevel.INFO,
+                        'level': WorkerProcessLogItemLevel.INFO.value,
                         'message': "gcode interpreted successfully, took %.02f seconds" % gcode_execution_time,
                     })
                 else:
@@ -115,6 +116,6 @@ class WorkerProcess():
             except Exception as e:
                 traceback.print_exc()
                 log_queue.put({
-                    'level': WorkerProcessLogItemLevel.ERROR,
+                    'level': WorkerProcessLogItemLevel.ERROR.value,
                     'message': "%s" % str(e),
                 })
